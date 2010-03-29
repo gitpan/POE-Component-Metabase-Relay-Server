@@ -1,0 +1,58 @@
+---
+abstract: 'A Metabase relay server component'
+author:
+  - 'Chris Williams <chris@bingosnet.co.uk>'
+build_requires:
+  ExtUtils::MakeMaker: 6.42
+  Test::More: 0.47
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
+distribution_type: module
+generated_by: 'Module::Install version 0.95'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: POE-Component-Metabase-Relay-Server
+no_index:
+  directory:
+    - examples
+    - inc
+    - t
+provides:
+  POE::Component::Metabase::Relay::Server:
+    file: lib/POE/Component/Metabase/Relay/Server.pm
+    version: 0.02
+  POE::Component::Metabase::Relay::Server::Queue:
+    file: lib/POE/Component/Metabase/Relay/Server/Queue.pm
+    version: 0.02
+requires:
+  CPAN::Testers::Report: 1.999
+  DBD::SQLite: 1.29
+  DBI: 1.609
+  Data::UUID: 1.203
+  JSON: 2.17
+  JSON::XS: 2.29
+  Metabase::Fact: 0.011
+  Metabase::User::Profile: 0.003
+  Metabase::User::Secret: 0.003
+  Moose: 1.01
+  MooseX::AttributeHelpers: 0.23
+  MooseX::POE: 0.205
+  MooseX::Types::Path::Class: 0.05
+  MooseX::Types::URI: 0.02
+  POE: 1.287
+  POE::Component::Client::HTTP: 0.895
+  POE::Component::EasyDBI: 1.23
+  POE::Component::Metabase::Client::Submit: 0.02
+  Params::Util: 1.01
+  Storable: 0
+  Test::POE::Server::TCP: 1.08
+  Time::HiRes: 0
+  URI: 1.52
+  perl: 5.6.0
+resources:
+  homepage: http://github.com/bingos/poe-component-metabase-relay-server/tree
+  license: http://dev.perl.org/licenses/
+  repository: git://github.com/bingos/poe-component-metabase-relay-server.git
+version: 0.02
