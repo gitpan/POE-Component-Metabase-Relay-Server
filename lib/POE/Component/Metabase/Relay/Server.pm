@@ -13,7 +13,7 @@ use Metabase::User::Profile   ();
 use Metabase::User::Secret    ();
 use vars qw[$VERSION];
 
-$VERSION = '0.04';
+$VERSION = '0.06';
 
 my @fields = qw(
   osversion
@@ -173,15 +173,16 @@ event 'shutdown' => sub {
  
 event 'relayd_registered' => sub {
   my ($kernel,$self,$relayd) = @_[KERNEL,OBJECT,ARG0];
-  return unless $self->debug;
-  warn "Listening on '", $relayd->port, "'\n";
+  warn "Listening on '", $relayd->port, "'\n" if $self->debug;
   $self->_set_port( $relayd->port );
   return;
 };
  
 event 'relayd_connected' => sub {
-  my ($kernel,$self) = @_[KERNEL,OBJECT];
-  warn "Client connected\n" if $self->debug;
+  # ARG0 is the client ID, ARG1 is the client's IP address, ARG2 is
+  # the client's TCP port. ARG3 is our IP address and ARG4 is our socket port.
+  my ($kernel,$self,$id,$ip) = @_[KERNEL,OBJECT,ARG0,ARG1];
+  warn "Client '$id' from $ip connected\n" if $self->debug;
   return;
 };
  
@@ -190,14 +191,19 @@ event 'relayd_disconnected' => sub {
   warn "Client Close '$id'\n" if $self->debug;
   my $data = delete $self->_requests->{$id};
   my $report = eval { Storable::thaw($data); };
-  return unless $report and ref $report eq 'HASH';
-  $kernel->yield( 'process_report', $report );
+  if ( defined $report and ref $report and ref $report eq 'HASH' ) {
+    warn "Client '$id' sent report: \n" . JSON->new->pretty(1)->encode( $report ) . "\n" if $self->debug;
+    $kernel->yield( 'process_report', $report );
+  } else {
+    warn "Client '$id' failed to send parsable data!\n" if $self->debug;
+  }
   return;
 };
  
 event 'relayd_client_input' => sub {
   my ($kernel,$self,$id,$data) = @_[KERNEL,OBJECT,ARG0,ARG1];
   $self->_requests->{$id} .= $data;
+  warn "Client '$id' sent chunk of data: \n" . JSON->new->allow_nonref(1)->pretty(1)->encode( $data ) . "\n" if $self->debug;
   return;
 };
 
@@ -206,13 +212,13 @@ event 'process_report' => sub {
   my @present = grep { defined $data->{$_} } @fields;
   return unless scalar @present == scalar @fields;
   # Build CPAN::Testers::Report with its various component facts.
+  warn "process_report for distfile: $data->{distfile}\n" if $self->debug;
   my $metabase_report = eval { CPAN::Testers::Report->open(
     resource => 'cpan:///distfile/' . $data->{distfile}
   ); };
 
   return unless $metabase_report;
 
-  warn $data->{distfile}, "\n" if $self->debug;
   $metabase_report->add( 'CPAN::Testers::Fact::LegacyReport' => {
     map { ( $_ => $data->{$_} ) } qw(grade osname osversion archname perl_version textreport)
   });

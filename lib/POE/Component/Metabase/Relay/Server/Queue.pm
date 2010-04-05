@@ -16,13 +16,13 @@ use vars qw[$VERSION];
 
 use constant DELAY => 150;
 
-$VERSION = '0.04';
+$VERSION = '0.06';
 
 my $sql = {
   'create' => 'CREATE TABLE IF NOT EXISTS queue ( id varchar(150), submitted varchar(32), attempts INTEGER, data BLOB )',
   'insert' => 'INSERT INTO queue values(?,?,?,?)',
   'delete' => 'DELETE FROM queue where id = ?',
-  'queue'  => 'SELECT * FROM queue ORDER BY submitted limit 10',
+  'queue'  => 'SELECT * FROM queue ORDER BY attempts ASC, submitted ASC limit 10',
   'update' => 'UPDATE queue SET attempts = ? WHERE id = ?',
 };
 
@@ -105,6 +105,12 @@ has _http_alias => (
   writer => '_set_http_alias',
 );
 
+has '_processing' => (
+  is => 'ro',
+  isa => 'HashRef',
+  default => sub {{}},
+);
+
 sub _build__easydbi {
   my $self = shift;
   POE::Component::EasyDBI->new(
@@ -131,6 +137,7 @@ sub START {
     sql => $sql->{create},
     event => '_generic_db_result',
   );
+  $kernel->yield( 'do_vacuum' );
   return if $self->multiple;
   $self->_set_http_alias( join '-', __PACKAGE__, $self->get_session_id );
   POE::Component::Client::HTTP->spawn(
@@ -140,6 +147,17 @@ sub START {
   $kernel->delay( '_process_queue', DELAY );
   return;
 }
+
+event 'do_vacuum' => sub {
+  my ($kernel,$self) = @_[KERNEL,OBJECT];
+  $self->_easydbi->do(
+    sql => 'VACUUM',
+    event => '_generic_db_result',
+  );
+
+  $kernel->delay( 'do_vacuum' => DELAY * 60 );
+  return;
+};
 
 event 'shutdown' => sub {
   my ($kernel,$self) = @_[KERNEL,OBJECT];
@@ -154,10 +172,7 @@ event 'shutdown' => sub {
 
 event '_generic_db_result' => sub {
   my ($kernel,$self,$result) = @_[KERNEL,OBJECT,ARG0];
-  if ( $self->debug ) {
-    warn $result->{sql}, "\n";
-    warn $result->{result}, "\n";
-  }
+  warn "DB result: " . JSON->new->pretty(1)->encode( $result ) . "\n" if $self->debug;
   $kernel->yield( '_process_queue' ) if $result->{_process};
   return;
 };
@@ -192,7 +207,16 @@ event '_queue_db_result' => sub {
     return;
   }
   foreach my $row ( @{ $result->{result} } ) {
+    # Have we seen this report before?
+    if ( exists $self->_processing->{ $row->{id} } ) {
+      warn "Queue retrieved same fact '$row->{id}', skipping\n" if $self->debug;
+      next;
+    } else {
+      $self->_processing->{ $row->{id} }++;
+    }
+
     my $report = $self->_decode_fact( $row->{data} );
+    warn "Queue retrieved '$row->{id}' for processing\n" if $self->debug;
     POE::Component::Metabase::Client::Submit->submit(
       event   => '_submit_status',
       profile => $self->profile,
@@ -207,11 +231,20 @@ event '_queue_db_result' => sub {
   return;
 };
 
+event '_clear_processing' => sub {
+  my($kernel,$self,$id) = @_[KERNEL,OBJECT,ARG0];
+  delete $self->_processing->{ $id } if exists
+    $self->_processing->{ $id };
+
+  return;
+};
+
 event '_submit_status' => sub {
   my ($kernel,$self,$res) = @_[KERNEL,OBJECT,ARG0];
   my ($id,$attempts) = @{ $res->{context} };
+  $kernel->delay_set( '_clear_processing' => DELAY, $id );
   if ( $res->{success} ) {
-    warn "Submit success\n" if $self->debug;
+    warn "Submit '$id' success\n" if $self->debug;
     $self->_easydbi->do(
       sql => $sql->{delete},
       event => '_generic_db_result',
@@ -219,7 +252,7 @@ event '_submit_status' => sub {
     );
   }
   else {
-    warn "Submit error ", $res->{error}, "\n" if $self->debug;
+    warn "Submit '$id' error: $res->{error}\n$res->{content}\n" if $self->debug;
     if ( $res->{content} =~ /GUID conflicts with an existing object/i ) {
       $self->_easydbi->do(
         sql => $sql->{delete},
