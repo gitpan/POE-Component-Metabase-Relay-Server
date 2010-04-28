@@ -16,14 +16,18 @@ use vars qw[$VERSION];
 
 use constant DELAY => 150;
 
-$VERSION = '0.06';
+$VERSION = '0.08';
 
 my $sql = {
   'create' => 'CREATE TABLE IF NOT EXISTS queue ( id varchar(150), submitted varchar(32), attempts INTEGER, data BLOB )',
   'insert' => 'INSERT INTO queue values(?,?,?,?)',
   'delete' => 'DELETE FROM queue where id = ?',
-  'queue'  => 'SELECT * FROM queue ORDER BY attempts ASC, submitted ASC limit 10',
+  'queue'  => 'SELECT * FROM queue ORDER BY attempts ASC, submitted ASC limit ', # the limit is appended via "submissions"
   'update' => 'UPDATE queue SET attempts = ? WHERE id = ?',
+  'addidx' => [
+	'CREATE INDEX IF NOT EXISTS queue_id ON queue ( id )',
+	'CREATE INDEX IF NOT EXISTS queue_att_sub ON queue ( attempts, submitted )',
+  ],
 };
 
 use MooseX::POE;
@@ -84,6 +88,23 @@ has 'db_opts' => (
   default => sub {{}},
 );
 
+has 'no_relay' => (
+  is => 'rw',
+  isa => 'Bool',
+  default => 0,
+  trigger => sub {
+    my( $self, $new, $old ) = @_;
+    return if ! $self->_has_easydbi;
+    $self->yield( '_process_queue' ) if ! $new;
+  },
+);
+
+has 'submissions' => (
+  is => 'rw',
+  isa => 'Int',
+  default => 10,
+);
+
 has '_uuid' => (
   is => 'ro',
   isa => 'Data::UUID',
@@ -132,20 +153,45 @@ sub spawn {
  
 sub START {
   my ($kernel,$self) = @_[KERNEL,OBJECT];
+  $self->_build_table;
+  $kernel->yield( 'do_vacuum' );
+  if ( ! $self->multiple ) {
+    $self->_set_http_alias( join '-', __PACKAGE__, $self->get_session_id );
+    POE::Component::Client::HTTP->spawn(
+      Alias           => $self->_http_alias,
+      FollowRedirects => 2,
+    );
+  }
+  $kernel->yield( '_process_queue' ) if ! $self->no_relay;
+  return;
+}
+
+sub _build_table {
+  my $self = shift;
+
   $self->_easydbi;
+
+  if ( $self->dsn =~ /^dbi\:SQLite/i ) {
+    $self->_easydbi->do(
+      sql => 'PRAGMA synchronous = OFF',
+      event => '_generic_db_result',
+      _ts => $self->_time,
+    );
+  }
+
   $self->_easydbi->do(
     sql => $sql->{create},
     event => '_generic_db_result',
+    _ts => $self->_time,
   );
-  $kernel->yield( 'do_vacuum' );
-  return if $self->multiple;
-  $self->_set_http_alias( join '-', __PACKAGE__, $self->get_session_id );
-  POE::Component::Client::HTTP->spawn(
-    Alias           => $self->_http_alias,
-    FollowRedirects => 2,
-  );
-  $kernel->delay( '_process_queue', DELAY );
-  return;
+
+  foreach my $idx ( @{ $sql->{addidx} } ) {
+    $self->_easydbi->do(
+      sql => $idx,
+      event => '_generic_db_result',
+      _ts => $self->_time,
+    );
+  }
 }
 
 event 'do_vacuum' => sub {
@@ -153,6 +199,7 @@ event 'do_vacuum' => sub {
   $self->_easydbi->do(
     sql => 'VACUUM',
     event => '_generic_db_result',
+    _ts => $self->_time,
   );
 
   $kernel->delay( 'do_vacuum' => DELAY * 60 );
@@ -172,7 +219,9 @@ event 'shutdown' => sub {
 
 event '_generic_db_result' => sub {
   my ($kernel,$self,$result) = @_[KERNEL,OBJECT,ARG0];
-  warn "DB result: " . JSON->new->pretty(1)->encode( $result ) . "\n" if $self->debug;
+  if ( $result->{error} ) {
+    warn "DB error (" . ( $self->_time - $result->{_ts} ) . "s): " . JSON->new->pretty(1)->encode( $result ) . "\n" if $self->debug;
+  }
   $kernel->yield( '_process_queue' ) if $result->{_process};
   return;
 };
@@ -180,22 +229,25 @@ event '_generic_db_result' => sub {
 event 'submit' => sub {
   my ($kernel,$self,$fact) = @_[KERNEL,OBJECT,ARG0];
   return unless $fact and $fact->isa('Metabase::Fact');
-  warn "Got a submission\n" if $self->debug;
+  my $timestamp = $self->_time;
   $self->_easydbi->do(
     sql => $sql->{insert},
     event => '_generic_db_result',
-    placeholders => [ $self->_uuid->create_b64(), $self->_time, 0, $self->_encode_fact( $fact ) ],
-    _process => 1,
+    placeholders => [ $self->_uuid->create_b64(), $timestamp, 0, $self->_encode_fact( $fact ) ],
+    ( $self->no_relay ? () : ( _process => 1 ) ),
+    _ts => $timestamp,
   );
   return;
 };
 
 event '_process_queue' => sub {
   my ($kernel,$self) = @_[KERNEL,OBJECT];
+  return if $self->no_relay;
   $kernel->delay( '_process_queue', DELAY );
   $self->_easydbi->arrayhash(
-    sql => $sql->{queue},
+    sql => $sql->{queue} . ( $self->multiple ? $self->submissions : 1 ),
     event => '_queue_db_result',
+    _ts => $self->_time,
   );
   return;
 };
@@ -206,24 +258,25 @@ event '_queue_db_result' => sub {
     warn $result->{error}, "\n";
     return;
   }
+# warn "Queue SQL took " . ( $self->_time - $result->{_ts} ) . "s to process\n";
   foreach my $row ( @{ $result->{result} } ) {
     # Have we seen this report before?
     if ( exists $self->_processing->{ $row->{id} } ) {
-      warn "Queue retrieved same fact '$row->{id}', skipping\n" if $self->debug;
+#      warn "Queue retrieved same fact '$row->{id}', skipping\n" if $self->debug;
       next;
     } else {
       $self->_processing->{ $row->{id} }++;
     }
 
     my $report = $self->_decode_fact( $row->{data} );
-    warn "Queue retrieved '$row->{id}' for processing\n" if $self->debug;
+#    warn "Queue retrieved '$row->{id}' for processing\n" if $self->debug;
     POE::Component::Metabase::Client::Submit->submit(
       event   => '_submit_status',
       profile => $self->profile,
       secret  => $self->secret,
       fact    => $report,
       uri     => $self->uri->as_string,
-      context => [ $row->{id}, $row->{attempts} ],
+      context => [ $row->{id}, $row->{attempts}, $self->_time ],
       ( $self->multiple ? () : ( http_alias => $self->_http_alias ) ),
     );
     
@@ -241,23 +294,27 @@ event '_clear_processing' => sub {
 
 event '_submit_status' => sub {
   my ($kernel,$self,$res) = @_[KERNEL,OBJECT,ARG0];
-  my ($id,$attempts) = @{ $res->{context} };
+  my ($id,$attempts,$starttime) = @{ $res->{context} };
+  my $timestamp = $self->_time;
   $kernel->delay_set( '_clear_processing' => DELAY, $id );
   if ( $res->{success} ) {
-    warn "Submit '$id' success\n" if $self->debug;
+    warn "Submit '$id' (" . ( $timestamp - $starttime ) . "s) success\n" if $self->debug;
     $self->_easydbi->do(
       sql => $sql->{delete},
       event => '_generic_db_result',
       placeholders => [ $id ],
+      ( $self->no_relay ? () : ( _process => 1 ) ),
+      _ts => $timestamp,
     );
   }
   else {
-    warn "Submit '$id' error: $res->{error}\n$res->{content}\n" if $self->debug;
-    if ( $res->{content} =~ /GUID conflicts with an existing object/i ) {
+    warn "Submit '$id' (" . ( $timestamp - $starttime ) . "s) error: $res->{error}\n" . ( defined $res->{content} ? "$res->{content}\n" : '' ) if $self->debug;
+    if ( defined $res->{content} and $res->{content} =~ /GUID conflicts with an existing object/i ) {
       $self->_easydbi->do(
         sql => $sql->{delete},
         event => '_generic_db_result',
         placeholders => [ $id ],
+        _ts => $timestamp,
       );
     }
     else {
@@ -266,6 +323,7 @@ event '_submit_status' => sub {
         sql => $sql->{update},
         event => '_generic_db_result',
         placeholders => [ $attempts, $id ],
+        _ts => $timestamp,
       );
     }
   }
@@ -327,6 +385,8 @@ and a number of optional parameters:
   'db_opts', a hashref of DBD options that is passed to POE::Component::EasyDBI;
   'debug', enable debugging information;
   'multiple', set to true to enable the Queue to use multiple PoCo-Client-HTTPs, default 0;
+  'no_relay', set to true to disable report submissions to the Metabase, default 0;
+  'submissions', an int to control the number of parallel http clients ( used only if multiple == 1 ), default 10;
 
 =back
 

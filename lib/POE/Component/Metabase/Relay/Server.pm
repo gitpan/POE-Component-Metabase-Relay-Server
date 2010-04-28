@@ -13,7 +13,7 @@ use Metabase::User::Profile   ();
 use Metabase::User::Secret    ();
 use vars qw[$VERSION];
 
-$VERSION = '0.06';
+$VERSION = '0.08';
 
 my @fields = qw(
   osversion
@@ -89,6 +89,28 @@ has 'multiple' => (
   default => 0,
 );
 
+has 'no_relay' => (
+  is => 'rw',
+  isa => 'Bool',
+  default => 0,
+  trigger => sub {
+    my( $self, $new, $old ) = @_;
+    return if ! $self->_has_queue;
+    $self->queue->no_relay( $new );
+  },
+);
+
+has 'submissions' => (
+  is => 'rw',
+  isa => 'Int',
+  default => 10,
+  trigger => sub {
+    my( $self, $new, $old ) = @_;
+    return if ! $self->_has_queue;
+    $self->queue->submissions( $new );
+  },
+);
+
 has '_profile' => (
   is => 'ro',
   isa => 'Metabase::User::Profile',
@@ -105,7 +127,7 @@ has '_secret' => (
  
 has '_relayd' => (
   accessor => 'relayd',
-  isa => 'Test::POE::Server::TCP',
+  isa => 'ArrayRef[Test::POE::Server::TCP]',
   lazy_build => 1,
   init_arg => undef,
 );
@@ -126,12 +148,23 @@ has '_requests' => (
 
 sub _build__relayd {
   my $self = shift;
-  Test::POE::Server::TCP->spawn(
+  if ( $self->address and ref $self->address eq 'ARRAY' ) {
+     my $aref = [];
+     push @$aref, 
+        Test::POE::Server::TCP->spawn(
+          address => $_,
+          port => $self->port,
+          prefix => 'relayd',
+          filter => POE::Filter::Stream->new(),
+        ) for @{ $self->address };
+     return $aref if scalar @$aref;
+  }
+  [ Test::POE::Server::TCP->spawn(
      address => $self->address,
      port => $self->port,
      prefix => 'relayd',
      filter => POE::Filter::Stream->new(),
-  );
+  ) ]
 }
 
 sub _build__queue {
@@ -146,6 +179,8 @@ sub _build__queue {
     secret   => $self->_secret,
     debug    => $self->debug,
     multiple => $self->multiple,
+    no_relay => $self->no_relay,
+    submissions => $self->submissions,
   );
 }
 
@@ -182,17 +217,17 @@ event 'relayd_connected' => sub {
   # ARG0 is the client ID, ARG1 is the client's IP address, ARG2 is
   # the client's TCP port. ARG3 is our IP address and ARG4 is our socket port.
   my ($kernel,$self,$id,$ip) = @_[KERNEL,OBJECT,ARG0,ARG1];
-  warn "Client '$id' from $ip connected\n" if $self->debug;
+#  warn "Client '$id' from $ip connected\n" if $self->debug;
   return;
 };
  
 event 'relayd_disconnected' => sub {
   my ($kernel,$self,$id) = @_[KERNEL,OBJECT,ARG0];
-  warn "Client Close '$id'\n" if $self->debug;
+#  warn "Client Close '$id'\n" if $self->debug;
   my $data = delete $self->_requests->{$id};
   my $report = eval { Storable::thaw($data); };
   if ( defined $report and ref $report and ref $report eq 'HASH' ) {
-    warn "Client '$id' sent report: \n" . JSON->new->pretty(1)->encode( $report ) . "\n" if $self->debug;
+#    warn "Client '$id' sent report: \n" . JSON->new->pretty(1)->encode( $report ) . "\n" if $self->debug;
     $kernel->yield( 'process_report', $report );
   } else {
     warn "Client '$id' failed to send parsable data!\n" if $self->debug;
@@ -203,7 +238,7 @@ event 'relayd_disconnected' => sub {
 event 'relayd_client_input' => sub {
   my ($kernel,$self,$id,$data) = @_[KERNEL,OBJECT,ARG0,ARG1];
   $self->_requests->{$id} .= $data;
-  warn "Client '$id' sent chunk of data: \n" . JSON->new->allow_nonref(1)->pretty(1)->encode( $data ) . "\n" if $self->debug;
+#  warn "Client '$id' sent chunk of data: \n" . JSON->new->allow_nonref(1)->pretty(1)->encode( $data ) . "\n" if $self->debug;
   return;
 };
 
@@ -212,7 +247,7 @@ event 'process_report' => sub {
   my @present = grep { defined $data->{$_} } @fields;
   return unless scalar @present == scalar @fields;
   # Build CPAN::Testers::Report with its various component facts.
-  warn "process_report for distfile: $data->{distfile}\n" if $self->debug;
+#  warn "process_report for distfile: $data->{distfile}\n" if $self->debug;
   my $metabase_report = eval { CPAN::Testers::Report->open(
     resource => 'cpan:///distfile/' . $data->{distfile}
   ); };
@@ -266,8 +301,6 @@ sub _load_id_file {
   $self->_set_secret( $secret );
   return 1;
 }
-
-
 
 no MooseX::POE;
  
@@ -329,6 +362,10 @@ and a number of optional parameters:
   'db_opts', a hashref of DBD options that is passed to POE::Component::EasyDBI;
   'debug', enable debugging information;
   'multiple', set to true to enable the Queue to use multiple PoCo-Client-HTTPs, default 0;
+  'no_relay', set to true to disable report submissions to the Metabase, default 0;
+  'submissions', an int to control the number of parallel http clients ( used only if multiple == 1 ), default 10;
+
+C<address> may be either an simple scalar value or an arrayref of addresses to bind to.
 
 =back
 
