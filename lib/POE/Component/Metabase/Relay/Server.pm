@@ -2,6 +2,7 @@ package POE::Component::Metabase::Relay::Server;
 
 use strict;
 use warnings;
+use Socket;
 use CPAN::Testers::Report;
 use POE qw[Filter::Stream];
 use POE::Component::Metabase::Relay::Server::Queue;
@@ -13,7 +14,7 @@ use Metabase::User::Profile   ();
 use Metabase::User::Secret    ();
 use vars qw[$VERSION];
 
-$VERSION = '0.08';
+$VERSION = '0.10';
 
 my @fields = qw(
   osversion
@@ -28,17 +29,27 @@ my @fields = qw(
 use MooseX::POE;
 use MooseX::Types::Path::Class qw[File];
 use MooseX::Types::URI qw[Uri];
- 
-has 'address' => (
-  is => 'ro',
-);
- 
+
+{
+  use Moose::Util::TypeConstraints;
+  my $tc = subtype as 'ArrayRef[Str]';
+  coerce $tc, from 'Str', via { [$_] };
+
+  has 'address' => (
+    is => 'ro',
+    isa => $tc,
+    coerce => 1,
+  );
+
+  no Moose::Util::TypeConstraints;
+}
+
 has 'port' => (
   is => 'ro',
   default => sub { 0 },
   writer => '_set_port',
 );
- 
+
 has 'id_file' => (
   is       => 'ro',
   required => 1,
@@ -148,23 +159,14 @@ has '_requests' => (
 
 sub _build__relayd {
   my $self = shift;
-  if ( $self->address and ref $self->address eq 'ARRAY' ) {
-     my $aref = [];
-     push @$aref, 
-        Test::POE::Server::TCP->spawn(
-          address => $_,
-          port => $self->port,
-          prefix => 'relayd',
-          filter => POE::Filter::Stream->new(),
-        ) for @{ $self->address };
-     return $aref if scalar @$aref;
-  }
-  [ Test::POE::Server::TCP->spawn(
-     address => $self->address,
-     port => $self->port,
-     prefix => 'relayd',
-     filter => POE::Filter::Stream->new(),
-  ) ]
+  return [map {
+    Test::POE::Server::TCP->spawn(
+        address => $_,
+        port => $self->port,
+        prefix => 'relayd',
+        filter => POE::Filter::Stream->new(),
+    )
+  } @{ $self->address }]
 }
 
 sub _build__queue {
@@ -208,7 +210,9 @@ event 'shutdown' => sub {
  
 event 'relayd_registered' => sub {
   my ($kernel,$self,$relayd) = @_[KERNEL,OBJECT,ARG0];
-  warn "Listening on '", $relayd->port, "'\n" if $self->debug;
+  my ($port, $addr) = sockaddr_in($relayd->getsockname);
+  warn "Listening on '", join(q{:} => scalar gethostbyaddr($addr, AF_INET), $port), "'\n"
+    if $self->debug;
   $self->_set_port( $relayd->port );
   return;
 };
