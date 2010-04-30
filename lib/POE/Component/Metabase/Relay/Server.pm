@@ -2,19 +2,19 @@ package POE::Component::Metabase::Relay::Server;
 
 use strict;
 use warnings;
-use Socket;
 use CPAN::Testers::Report;
 use POE qw[Filter::Stream];
 use POE::Component::Metabase::Relay::Server::Queue;
 use Test::POE::Server::TCP;
 use Carp                      ();
 use Storable                  ();
+use Socket                    ();
 use JSON                      ();
 use Metabase::User::Profile   ();
 use Metabase::User::Secret    ();
 use vars qw[$VERSION];
 
-$VERSION = '0.10';
+$VERSION = '0.12';
 
 my @fields = qw(
   osversion
@@ -210,8 +210,8 @@ event 'shutdown' => sub {
  
 event 'relayd_registered' => sub {
   my ($kernel,$self,$relayd) = @_[KERNEL,OBJECT,ARG0];
-  my ($port, $addr) = sockaddr_in($relayd->getsockname);
-  warn "Listening on '", join(q{:} => scalar gethostbyaddr($addr, AF_INET), $port), "'\n"
+  my ($port, $addr) = Socket::sockaddr_in($relayd->getsockname);
+  warn "Listening on '", join(q{:} => scalar gethostbyaddr($addr, Socket::AF_INET), $port), "'\n"
     if $self->debug;
   $self->_set_port( $relayd->port );
   return;

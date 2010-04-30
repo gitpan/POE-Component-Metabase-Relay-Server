@@ -22,10 +22,10 @@ no_index:
 provides:
   POE::Component::Metabase::Relay::Server:
     file: lib/POE/Component/Metabase/Relay/Server.pm
-    version: 0.10
+    version: 0.12
   POE::Component::Metabase::Relay::Server::Queue:
     file: lib/POE/Component/Metabase/Relay/Server/Queue.pm
-    version: 0.10
+    version: 0.12
 requires:
   CPAN::Testers::Report: 1.999
   DBD::SQLite: 1.29
@@ -56,4 +56,4 @@ resources:
   homepage: http://github.com/bingos/poe-component-metabase-relay-server/tree
   license: http://dev.perl.org/licenses/
   repository: git://github.com/bingos/poe-component-metabase-relay-server.git
-version: 0.10
+version: 0.12

@@ -1,4 +1,32 @@
 ==============================
+2010-04-30 15:40:37 +0100 0.12
+==============================
+
+  commit 000ec9a059208e41a6dc5ab08856397ac571a5c5
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date:   Fri Apr 30 15:40:37 2010 +0100
+  
+    Bump version to 0.12
+
+  commit 8291bea87907e163157d6a6a644bae7ecd17ca09
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date:   Fri Apr 30 15:36:33 2010 +0100
+  
+    Sync up
+
+  commit 3e16f27b007eaa8c7d84e135b6204a43ec24977b
+  Author: Florian Ragwitz <rafl@debian.org>
+  Date:   Fri Apr 30 16:15:14 2010 +0200
+  
+    Stop importing all of Socket::.
+
+  commit 5019807fa208b95c8d2d1a3d6536a79a11f0ea17
+  Author: Florian Ragwitz <rafl@debian.org>
+  Date:   Fri Apr 30 16:14:54 2010 +0200
+  
+    Disable pod tests for users. 
+
+==============================
 2010-04-29 00:41:20 +0100 0.10
 ==============================
 
