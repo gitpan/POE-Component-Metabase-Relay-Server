@@ -1,6 +1,6 @@
 package POE::Component::Metabase::Relay::Server;
 BEGIN {
-  $POE::Component::Metabase::Relay::Server::VERSION = '0.14';
+  $POE::Component::Metabase::Relay::Server::VERSION = '0.16';
 }
 
 # ABSTRACT: A Metabase relay server component
@@ -211,10 +211,12 @@ sub spawn {
  
 sub START {
   my ($kernel,$self,$sender) = @_[KERNEL,OBJECT,SENDER];
-  if ( $kernel == $sender and !$self->session ) {
+  if ( $kernel == $sender and $self->recv_event and !$self->session ) {
     Carp::croak "Not called from another POE session and 'session' wasn't set\n";
   }
-  $self->_set_session( $sender->ID ) unless $self->session;
+  if ( $self->recv_event ) {
+    $self->_set_session( $sender->ID ) unless $self->session;
+  }
   $self->_load_id_file;
   $self->relayd;
   $self->queue;
@@ -342,7 +344,7 @@ POE::Component::Metabase::Relay::Server - A Metabase relay server component
 
 =head1 VERSION
 
-version 0.14
+version 0.16
 
 =head1 SYNOPSIS
 

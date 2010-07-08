@@ -43,4 +43,4 @@ requires:
 resources:
   homepage: http://github.com/bingos/poe-component-metabase-relay-server/tree
   repository: git://github.com/bingos/poe-component-metabase-relay-server.git
-version: 0.14
+version: 0.16
