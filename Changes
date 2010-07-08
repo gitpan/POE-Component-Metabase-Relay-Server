@@ -1,4 +1,33 @@
 ==============================
+2010-07-08 11:39:49 +0100 0.14
+==============================
+
+  commit cebaa2cee3a8a20a4c26c42861f237e8315f3691
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Thu Jul 8 11:39:49 2010 +0100
+  
+    Fix the POD
+
+  commit 647cfcfd41f21cf710d2687d0c65f8d5d9eb727c
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Thu Jul 8 11:24:57 2010 +0100
+  
+    Added 'session' and 'recv_event' parameters
+
+  commit d2f6d7bb4b35420058a715f3f2e9f7cad22a70d1
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Wed Jul 7 22:01:22 2010 +0100
+  
+    Added test and an example metabase profile file, found and fixed
+    errors.
+
+  commit 44c32077bfe420acc5498e59559905195b06e3c6
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Wed Jul 7 12:50:33 2010 +0100
+  
+    Switched distribution to Dist::Zilla 
+
+==============================
 2010-04-30 15:40:37 +0100 0.12
 ==============================
 
@@ -272,6 +301,6 @@
     POE::Component::Metabase::Client::Submit to spawn a HTTP poco for
     each submit instead of using a common HTTP poco. 
 
-==============
-End of Excerpt
-==============
+===================================
+End of changes in the last 365 days
+===================================

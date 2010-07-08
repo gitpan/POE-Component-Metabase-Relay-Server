@@ -1,42 +1,77 @@
+
 use strict;
-use inc::Module::Install;
-use Module::Install::ReadmeFromPod;
-use Module::Install::AutoLicense;
-use Module::Install::GithubMeta;
-name 'POE-Component-Metabase-Relay-Server';
-author 'Chris Williams <chris@bingosnet.co.uk>';
-version_from 'lib/POE/Component/Metabase/Relay/Server.pm';
-abstract_from 'lib/POE/Component/Metabase/Relay/Server.pm';
-readme_from 'lib/POE/Component/Metabase/Relay/Server.pm';
-perl_version '5.006';
-license 'perl';
-auto_license holder => 'Chris Williams',
-build_requires 'Test::More' => 0.47;
-requires 'CPAN::Testers::Report' => '1.999';
-requires 'Data::UUID' => '1.203';
-requires 'DBD::SQLite' => '1.29';
-requires 'DBI' => '1.609';
-requires 'JSON' => '2.17';
-requires 'JSON::XS' => '2.29';
-requires 'Params::Util' => '1.01';
-requires 'POE' => '1.287';
-requires 'POE::Component::Client::HTTP' => '0.895';
-requires 'POE::Component::EasyDBI' => '1.23';
-requires 'POE::Component::Metabase::Client::Submit' => '0.02';
-requires 'Metabase::Fact' => '0.011';
-requires 'Metabase::User::Profile' => '0.003';
-requires 'Metabase::User::Secret' => '0.003';
-requires 'Moose' => '1.01';
-requires 'Moose::Util::TypeConstraints' => '1.01';
-requires 'MooseX::AttributeHelpers' => '0.23';
-requires 'MooseX::POE' => '0.205';
-requires 'MooseX::Types::Path::Class' => '0.05';
-requires 'MooseX::Types::URI' => '0.02';
-requires 'Test::POE::Server::TCP' => '1.08';
-requires 'Time::HiRes' => 0;
-requires 'Storable' => 0;
-requires 'URI' => '1.52';
-makemaker_args(dist => { PREOP => "$^X ./tools/git-log.pl > ./Changes" });
-githubmeta;
-auto_provides;
-WriteAll();
+use warnings;
+
+BEGIN { require v5.6.0; }
+
+use ExtUtils::MakeMaker 6.31;
+
+
+
+my %WriteMakefileArgs = (
+  'ABSTRACT' => 'A Metabase relay server component',
+  'AUTHOR' => 'Chris Williams <chris@bingosnet.co.uk>',
+  'BUILD_REQUIRES' => {
+    'ExtUtils::MakeMaker' => '6.42',
+    'Test::More' => '0.47'
+  },
+  'CONFIGURE_REQUIRES' => {
+    'ExtUtils::MakeMaker' => '6.42'
+  },
+  'DISTNAME' => 'POE-Component-Metabase-Relay-Server',
+  'EXE_FILES' => [],
+  'LICENSE' => 'perl',
+  'NAME' => 'POE::Component::Metabase::Relay::Server',
+  'PREREQ_PM' => {
+    'CPAN::Testers::Report' => '1.999',
+    'DBD::SQLite' => '1.29',
+    'DBI' => '1.609',
+    'Data::UUID' => '1.203',
+    'JSON' => '2.17',
+    'JSON::XS' => '2.29',
+    'Metabase::Fact' => '0.011',
+    'Metabase::User::Profile' => '0.003',
+    'Metabase::User::Secret' => '0.003',
+    'Moose' => '1.01',
+    'Moose::Util::TypeConstraints' => '1.01',
+    'MooseX::AttributeHelpers' => '0.23',
+    'MooseX::POE' => '0.205',
+    'MooseX::Types::Path::Class' => '0.05',
+    'MooseX::Types::URI' => '0.02',
+    'POE' => '1.287',
+    'POE::Component::Client::HTTP' => '0.895',
+    'POE::Component::EasyDBI' => '1.23',
+    'POE::Component::Metabase::Client::Submit' => '0.02',
+    'Params::Util' => '1.01',
+    'Storable' => '0',
+    'Test::POE::Server::TCP' => '1.12',
+    'Time::HiRes' => '0',
+    'URI' => '1.52'
+  },
+  'VERSION' => '0.14',
+  'test' => {
+    'TESTS' => 't/*.t'
+  }
+);
+
+
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
+  my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};
+  my $pp = $WriteMakefileArgs{PREREQ_PM};
+  for my $mod ( keys %$br ) {
+    if ( exists $pp->{$mod} ) {
+      $pp->{$mod} = $br->{$mod} if $br->{$mod} > $pp->{$mod};
+    }
+    else {
+      $pp->{$mod} = $br->{$mod};
+    }
+  }
+}
+
+delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
+
+WriteMakefile(%WriteMakefileArgs);
+
+
+

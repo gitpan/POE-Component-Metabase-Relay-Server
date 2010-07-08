@@ -1,4 +1,9 @@
 package POE::Component::Metabase::Relay::Server::Queue;
+BEGIN {
+  $POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.14';
+}
+
+# ABSTRACT: Submission queue for the metabase relay
 
 use strict;
 use warnings;
@@ -12,11 +17,9 @@ use JSON ();
 use Params::Util qw[_HASH];
 use Time::HiRes ();
 use Data::UUID;
-use vars qw[$VERSION];
 
 use constant DELAY => 150;
 
-$VERSION = '0.12';
 
 my $sql = {
   'create' => 'CREATE TABLE IF NOT EXISTS queue ( id varchar(150), submitted varchar(32), attempts INTEGER, data BLOB )',
@@ -166,6 +169,7 @@ sub START {
   return;
 }
 
+
 sub _build_table {
   my $self = shift;
 
@@ -209,7 +213,7 @@ event 'do_vacuum' => sub {
 event 'shutdown' => sub {
   my ($kernel,$self) = @_[KERNEL,OBJECT];
   $kernel->alarm_remove_all();
-  $self->_easydbi->shutdown;
+  $kernel->post( $self->_easydbi->ID, 'shutdown' );
   $kernel->post( 
     $self->_http_alias,
     'shutdown',
@@ -258,18 +262,15 @@ event '_queue_db_result' => sub {
     warn $result->{error}, "\n";
     return;
   }
-# warn "Queue SQL took " . ( $self->_time - $result->{_ts} ) . "s to process\n";
   foreach my $row ( @{ $result->{result} } ) {
     # Have we seen this report before?
     if ( exists $self->_processing->{ $row->{id} } ) {
-#      warn "Queue retrieved same fact '$row->{id}', skipping\n" if $self->debug;
       next;
     } else {
       $self->_processing->{ $row->{id} }++;
     }
 
     my $report = $self->_decode_fact( $row->{data} );
-#    warn "Queue retrieved '$row->{id}' for processing\n" if $self->debug;
     POE::Component::Metabase::Client::Submit->submit(
       event   => '_submit_status',
       profile => $self->profile,
@@ -350,11 +351,17 @@ __PACKAGE__->meta->make_immutable;
  
 1;
 
+
 __END__
+=pod
 
 =head1 NAME
 
 POE::Component::Metabase::Relay::Server::Queue - Submission queue for the metabase relay
+
+=head1 VERSION
+
+version 0.14
 
 =head1 DESCRIPTION
 
@@ -362,6 +369,10 @@ POE::Component::Metabase::Relay::Server::Queue is the submission queue for L<POE
 
 It is based on L<POE::Component::EasyDBI> database and uses L<POE::Component::Metabase::Client::Submit> to send
 reports to a L<Metabase> server.
+
+=for Pod::Coverage DELAY
+
+=for Pod::Coverage START
 
 =head1 CONSTRUCTOR
 
@@ -404,16 +415,6 @@ Terminates the component.
 
 =back
 
-=head1 AUTHOR
-
-Chris C<BinGOs> Williams
-
-=head1 LICENSE
-
-Copyright E<copy> Chris Williams
-
-This module may be used, modified, and distributed under the same terms as Perl itself. Please see the license that came with your Perl distribution for details.
-
 =head1 SEE ALSO
 
 L<Metabase>
@@ -428,4 +429,16 @@ L<POE::Component::Metabase::Relay::Server>
 
 L<POE::Component::EasyDBI>
 
+=head1 AUTHOR
+
+Chris Williams <chris@bingosnet.co.uk>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2010 by Chris Williams.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
 =cut
+

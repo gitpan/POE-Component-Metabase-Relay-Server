@@ -1,4 +1,9 @@
 package POE::Component::Metabase::Relay::Server;
+BEGIN {
+  $POE::Component::Metabase::Relay::Server::VERSION = '0.14';
+}
+
+# ABSTRACT: A Metabase relay server component
 
 use strict;
 use warnings;
@@ -12,9 +17,6 @@ use Socket                    ();
 use JSON                      ();
 use Metabase::User::Profile   ();
 use Metabase::User::Secret    ();
-use vars qw[$VERSION];
-
-$VERSION = '0.12';
 
 my @fields = qw(
   osversion
@@ -38,7 +40,18 @@ use MooseX::Types::URI qw[Uri];
   has 'address' => (
     is => 'ro',
     isa => $tc,
+    default => 0,
     coerce => 1,
+  );
+
+  my $ps = subtype as 'Str', where { $poe_kernel->alias_resolve( $_ ) };
+  coerce $ps, from 'Str', via { $poe_kernel->alias_resolve( $_ )->ID };
+
+  has 'session' => ( 
+    is => 'ro',
+    isa => $ps,
+    coerce => 1,
+    writer => '_set_session',
   );
 
   no Moose::Util::TypeConstraints;
@@ -100,6 +113,11 @@ has 'multiple' => (
   default => 0,
 );
 
+has 'recv_event' => (
+  is => 'ro',
+  isa => 'Str',
+);
+
 has 'no_relay' => (
   is => 'rw',
   isa => 'Bool',
@@ -140,6 +158,7 @@ has '_relayd' => (
   accessor => 'relayd',
   isa => 'ArrayRef[Test::POE::Server::TCP]',
   lazy_build => 1,
+  auto_deref => 1,
   init_arg => undef,
 );
 
@@ -191,17 +210,22 @@ sub spawn {
 }
  
 sub START {
-  my ($kernel,$self) = @_[KERNEL,OBJECT];
+  my ($kernel,$self,$sender) = @_[KERNEL,OBJECT,SENDER];
+  if ( $kernel == $sender and !$self->session ) {
+    Carp::croak "Not called from another POE session and 'session' wasn't set\n";
+  }
+  $self->_set_session( $sender->ID ) unless $self->session;
   $self->_load_id_file;
   $self->relayd;
   $self->queue;
   return;
 }
 
+
 event 'shutdown' => sub {
   my ($kernel,$self) = @_[KERNEL,OBJECT];
-  $self->relayd->shutdown;
-  $kernel->post( 
+  $_->shutdown for $self->relayd;
+  $poe_kernel->post( 
     $self->queue->get_session_id,
     'shutdown',
   );
@@ -218,21 +242,16 @@ event 'relayd_registered' => sub {
 };
  
 event 'relayd_connected' => sub {
-  # ARG0 is the client ID, ARG1 is the client's IP address, ARG2 is
-  # the client's TCP port. ARG3 is our IP address and ARG4 is our socket port.
   my ($kernel,$self,$id,$ip) = @_[KERNEL,OBJECT,ARG0,ARG1];
-#  warn "Client '$id' from $ip connected\n" if $self->debug;
   return;
 };
  
 event 'relayd_disconnected' => sub {
-  my ($kernel,$self,$id) = @_[KERNEL,OBJECT,ARG0];
-#  warn "Client Close '$id'\n" if $self->debug;
+  my ($kernel,$self,$id,$ip) = @_[KERNEL,OBJECT,ARG0,ARG1];
   my $data = delete $self->_requests->{$id};
   my $report = eval { Storable::thaw($data); };
   if ( defined $report and ref $report and ref $report eq 'HASH' ) {
-#    warn "Client '$id' sent report: \n" . JSON->new->pretty(1)->encode( $report ) . "\n" if $self->debug;
-    $kernel->yield( 'process_report', $report );
+    $kernel->yield( 'process_report', $report, $ip );
   } else {
     warn "Client '$id' failed to send parsable data!\n" if $self->debug;
   }
@@ -242,21 +261,22 @@ event 'relayd_disconnected' => sub {
 event 'relayd_client_input' => sub {
   my ($kernel,$self,$id,$data) = @_[KERNEL,OBJECT,ARG0,ARG1];
   $self->_requests->{$id} .= $data;
-#  warn "Client '$id' sent chunk of data: \n" . JSON->new->allow_nonref(1)->pretty(1)->encode( $data ) . "\n" if $self->debug;
   return;
 };
 
 event 'process_report' => sub {
-  my ($kernel,$self,$data) = @_[KERNEL,OBJECT,ARG0];
+  my ($kernel,$self,$data,$ip) = @_[KERNEL,OBJECT,ARG0,ARG1];
   my @present = grep { defined $data->{$_} } @fields;
   return unless scalar @present == scalar @fields;
   # Build CPAN::Testers::Report with its various component facts.
-#  warn "process_report for distfile: $data->{distfile}\n" if $self->debug;
   my $metabase_report = eval { CPAN::Testers::Report->open(
     resource => 'cpan:///distfile/' . $data->{distfile}
   ); };
 
   return unless $metabase_report;
+
+  $kernel->post( $self->session, $self->recv_event, $data, $ip )
+    if $self->recv_event;
 
   $metabase_report->add( 'CPAN::Testers::Fact::LegacyReport' => {
     map { ( $_ => $data->{$_} ) } qw(grade osname osversion archname perl_version textreport)
@@ -312,12 +332,17 @@ __PACKAGE__->meta->make_immutable;
  
 1;
 
-__END__
 
+__END__
+=pod
 
 =head1 NAME
 
 POE::Component::Metabase::Relay::Server - A Metabase relay server component
+
+=head1 VERSION
+
+version 0.14
 
 =head1 SYNOPSIS
 
@@ -342,6 +367,8 @@ POE::Component::Metabase::Relay::Server - A Metabase relay server component
 POE::Component::Metabase::Relay::Server is a relay server for L<Metabase>. It provides a listener
 that accepts connections from L<Test::Reporter::Transport::Socket> based CPAN Testers and 
 relays the L<Storable> serialised data to L<Metabase> using L<POE::Component::Metabase::Client::Submit>.
+
+=for Pod::Coverage START
 
 =head1 CONSTRUCTOR
 
@@ -368,21 +395,42 @@ and a number of optional parameters:
   'multiple', set to true to enable the Queue to use multiple PoCo-Client-HTTPs, default 0;
   'no_relay', set to true to disable report submissions to the Metabase, default 0;
   'submissions', an int to control the number of parallel http clients ( used only if multiple == 1 ), default 10;
+  'session', a POE::Session alias or session ID to send events to;
+  'recv_event', an event to be triggered when reports are received by the relay;
 
 C<address> may be either an simple scalar value or an arrayref of addresses to bind to.
 
+If C<recv_event> is specified an event will be sent for every report received by the relay server.
+Unless C<session> is specified this event will be sent to the parent session of the component.
+
 =back
+
+=head1 OUTPUT EVENTS
+
+If C<recv_event> is specified to C<spawn>, an event will be sent with the following:
+
+C<ARG0> will be a C<HASHREF> with the following keys:
+
+ osversion
+ distfile
+ archname
+ textreport
+ osname
+ perl_version
+ grade
+
+C<ARG1> will be the IP address of the client that sent the report.
 
 =head1 AUTHOR
 
-Chris C<BinGOs> Williams
+Chris Williams <chris@bingosnet.co.uk>
 
-=head1 LICENSE
+=head1 COPYRIGHT AND LICENSE
 
-Copyright E<copy> Chris Williams
+This software is copyright (c) 2010 by Chris Williams.
 
-This module may be used, modified, and distributed under the same terms as Perl itself. Please see the license that came with your Perl distribution for details.
-
-=head1 SEE ALSO
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
+

@@ -2,6 +2,9 @@ NAME
     POE::Component::Metabase::Relay::Server - A Metabase relay server
     component
 
+VERSION
+    version 0.14
+
 SYNOPSIS
       use strict;
       use warnings;
@@ -48,18 +51,38 @@ CONSTRUCTOR
           'multiple', set to true to enable the Queue to use multiple PoCo-Client-HTTPs, default 0;
           'no_relay', set to true to disable report submissions to the Metabase, default 0;
           'submissions', an int to control the number of parallel http clients ( used only if multiple == 1 ), default 10;
+          'session', a POE::Session alias or session ID to send events to;
+          'recv_event', an event to be triggered when reports are received by the relay;
 
         "address" may be either an simple scalar value or an arrayref of
         addresses to bind to.
 
+        If "recv_event" is specified an event will be sent for every report
+        received by the relay server. Unless "session" is specified this
+        event will be sent to the parent session of the component.
+
+OUTPUT EVENTS
+    If "recv_event" is specified to "spawn", an event will be sent with the
+    following:
+
+    "ARG0" will be a "HASHREF" with the following keys:
+
+     osversion
+     distfile
+     archname
+     textreport
+     osname
+     perl_version
+     grade
+
+    "ARG1" will be the IP address of the client that sent the report.
+
 AUTHOR
-    Chris "BinGOs" Williams
+    Chris Williams <chris@bingosnet.co.uk>
 
-LICENSE
-    Copyright © Chris Williams
+COPYRIGHT AND LICENSE
+    This software is copyright (c) 2010 by Chris Williams.
 
-    This module may be used, modified, and distributed under the same terms
-    as Perl itself. Please see the license that came with your Perl
-    distribution for details.
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
 
-SEE ALSO
