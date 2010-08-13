@@ -1,6 +1,6 @@
 package POE::Component::Metabase::Relay::Server;
 BEGIN {
-  $POE::Component::Metabase::Relay::Server::VERSION = '0.16';
+  $POE::Component::Metabase::Relay::Server::VERSION = '0.18';
 }
 
 # ABSTRACT: A Metabase relay server component
@@ -254,8 +254,11 @@ event 'relayd_disconnected' => sub {
   my $report = eval { Storable::thaw($data); };
   if ( defined $report and ref $report and ref $report eq 'HASH' ) {
     $kernel->yield( 'process_report', $report, $ip );
-  } else {
-    warn "Client '$id' failed to send parsable data!\n" if $self->debug;
+  } 
+  else {
+    return unless $self->debug;
+    warn "Client '$id' failed to send parsable data!\n";
+    warn "The error from Storable::thaw was '$@'\n";
   }
   return;
 };
@@ -344,7 +347,7 @@ POE::Component::Metabase::Relay::Server - A Metabase relay server component
 
 =head1 VERSION
 
-version 0.16
+version 0.18
 
 =head1 SYNOPSIS
 
@@ -422,6 +425,8 @@ C<ARG0> will be a C<HASHREF> with the following keys:
  grade
 
 C<ARG1> will be the IP address of the client that sent the report.
+
+If C<queue_event> is specified to C<spawn>, an event will be sent for particular changes in queue status
 
 =head1 AUTHOR
 

@@ -1,4 +1,15 @@
 ==============================
+2010-08-13 12:06:39 +0100 0.18
+==============================
+
+  commit 75d1ff9d208127acac6f31d0b3a05fa233898636
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Fri Aug 13 12:06:39 2010 +0100
+  
+    Added extra debug info when we receive data we can't parse. Enqueued
+    event generation to the queue. 
+
+==============================
 2010-07-08 14:33:14 +0100 0.16
 ==============================
 

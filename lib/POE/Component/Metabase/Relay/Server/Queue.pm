@@ -1,6 +1,6 @@
 package POE::Component::Metabase::Relay::Server::Queue;
 BEGIN {
-  $POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.16';
+  $POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.18';
 }
 
 # ABSTRACT: Submission queue for the metabase relay
@@ -35,6 +35,26 @@ my $sql = {
 
 use MooseX::POE;
 use MooseX::Types::URI qw[Uri];
+
+{
+  use Moose::Util::TypeConstraints;
+
+  my $ps = subtype as 'Str', where { $poe_kernel->alias_resolve( $_ ) };
+  coerce $ps, from 'Str', via { $poe_kernel->alias_resolve( $_ )->ID };
+
+  has 'session' => (
+    is => 'ro',
+    isa => $ps,
+    coerce => 1,
+  );
+
+  no Moose::Util::TypeConstraints;
+}
+
+has 'event' => (
+  is => 'ro',
+  isa => 'Str',
+);
 
 has 'profile' => (
   is => 'ro',
@@ -234,6 +254,7 @@ event 'submit' => sub {
   my ($kernel,$self,$fact) = @_[KERNEL,OBJECT,ARG0];
   return unless $fact and $fact->isa('Metabase::Fact');
   my $timestamp = $self->_time;
+  $kernel->yield( '_dispatch_event', 'enqueued', $fact );
   $self->_easydbi->do(
     sql => $sql->{insert},
     event => '_generic_db_result',
@@ -247,6 +268,7 @@ event 'submit' => sub {
 event '_process_queue' => sub {
   my ($kernel,$self) = @_[KERNEL,OBJECT];
   return if $self->no_relay;
+  # Processing event
   $kernel->delay( '_process_queue', DELAY );
   $self->_easydbi->arrayhash(
     sql => $sql->{queue} . ( $self->multiple ? $self->submissions : 1 ),
@@ -270,6 +292,7 @@ event '_queue_db_result' => sub {
       $self->_processing->{ $row->{id} }++;
     }
 
+    # Submit event ?
     my $report = $self->_decode_fact( $row->{data} );
     POE::Component::Metabase::Client::Submit->submit(
       event   => '_submit_status',
@@ -282,6 +305,13 @@ event '_queue_db_result' => sub {
     );
     
   }
+  return;
+};
+
+event '_dispatch_event' => sub {
+  my ($kernel,$self,@args) = @_[KERNEL,OBJECT,ARG0..$#_];
+  return unless $self->session and $self->event;
+  $kernel->post( $self->session, $self->event, @args );
   return;
 };
 
@@ -299,6 +329,7 @@ event '_submit_status' => sub {
   my $timestamp = $self->_time;
   $kernel->delay_set( '_clear_processing' => DELAY, $id );
   if ( $res->{success} ) {
+    # Success event
     warn "Submit '$id' (" . ( $timestamp - $starttime ) . "s) success\n" if $self->debug;
     $self->_easydbi->do(
       sql => $sql->{delete},
@@ -311,6 +342,7 @@ event '_submit_status' => sub {
   else {
     warn "Submit '$id' (" . ( $timestamp - $starttime ) . "s) error: $res->{error}\n" . ( defined $res->{content} ? "$res->{content}\n" : '' ) if $self->debug;
     if ( defined $res->{content} and $res->{content} =~ /GUID conflicts with an existing object/i ) {
+      # Duplicate event
       $self->_easydbi->do(
         sql => $sql->{delete},
         event => '_generic_db_result',
@@ -319,6 +351,7 @@ event '_submit_status' => sub {
       );
     }
     else {
+      # Re-enqueue event
       $attempts++;
       $self->_easydbi->do(
         sql => $sql->{update},
@@ -361,7 +394,7 @@ POE::Component::Metabase::Relay::Server::Queue - Submission queue for the metaba
 
 =head1 VERSION
 
-version 0.16
+version 0.18
 
 =head1 DESCRIPTION
 

@@ -3,7 +3,7 @@ NAME
     component
 
 VERSION
-    version 0.16
+    version 0.18
 
 SYNOPSIS
       use strict;
@@ -76,6 +76,9 @@ OUTPUT EVENTS
      grade
 
     "ARG1" will be the IP address of the client that sent the report.
+
+    If "queue_event" is specified to "spawn", an event will be sent for
+    particular changes in queue status
 
 AUTHOR
     Chris Williams <chris@bingosnet.co.uk>
