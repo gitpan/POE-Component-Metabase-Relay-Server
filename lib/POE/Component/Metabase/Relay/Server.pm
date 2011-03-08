@@ -1,6 +1,6 @@
 package POE::Component::Metabase::Relay::Server;
 BEGIN {
-  $POE::Component::Metabase::Relay::Server::VERSION = '0.18';
+  $POE::Component::Metabase::Relay::Server::VERSION = '0.20';
 }
 
 # ABSTRACT: A Metabase relay server component
@@ -47,7 +47,7 @@ use MooseX::Types::URI qw[Uri];
   my $ps = subtype as 'Str', where { $poe_kernel->alias_resolve( $_ ) };
   coerce $ps, from 'Str', via { $poe_kernel->alias_resolve( $_ )->ID };
 
-  has 'session' => ( 
+  has 'session' => (
     is => 'ro',
     isa => $ps,
     coerce => 1,
@@ -146,14 +146,14 @@ has '_profile' => (
   init_arg => undef,
   writer => '_set_profile',
 );
- 
+
 has '_secret' => (
   is => 'ro',
   isa => 'Metabase::User::Secret',
   init_arg => undef,
   writer => '_set_secret',
 );
- 
+
 has '_relayd' => (
   accessor => 'relayd',
   isa => 'ArrayRef[Test::POE::Server::TCP]',
@@ -168,7 +168,7 @@ has '_queue' => (
   lazy_build => 1,
   init_arg => undef,
 );
- 
+
 has '_requests' => (
   is => 'ro',
   isa => 'HashRef',
@@ -208,7 +208,7 @@ sub _build__queue {
 sub spawn {
   shift->new(@_);
 }
- 
+
 sub START {
   my ($kernel,$self,$sender) = @_[KERNEL,OBJECT,SENDER];
   if ( $kernel == $sender and $self->recv_event and !$self->session ) {
@@ -227,13 +227,13 @@ sub START {
 event 'shutdown' => sub {
   my ($kernel,$self) = @_[KERNEL,OBJECT];
   $_->shutdown for $self->relayd;
-  $poe_kernel->post( 
+  $poe_kernel->post(
     $self->queue->get_session_id,
     'shutdown',
   );
   return;
 };
- 
+
 event 'relayd_registered' => sub {
   my ($kernel,$self,$relayd) = @_[KERNEL,OBJECT,ARG0];
   my ($port, $addr) = Socket::sockaddr_in($relayd->getsockname);
@@ -242,19 +242,19 @@ event 'relayd_registered' => sub {
   $self->_set_port( $relayd->port );
   return;
 };
- 
+
 event 'relayd_connected' => sub {
   my ($kernel,$self,$id,$ip) = @_[KERNEL,OBJECT,ARG0,ARG1];
   return;
 };
- 
+
 event 'relayd_disconnected' => sub {
   my ($kernel,$self,$id,$ip) = @_[KERNEL,OBJECT,ARG0,ARG1];
   my $data = delete $self->_requests->{$id};
   my $report = eval { Storable::thaw($data); };
   if ( defined $report and ref $report and ref $report eq 'HASH' ) {
     $kernel->yield( 'process_report', $report, $ip );
-  } 
+  }
   else {
     return unless $self->debug;
     warn "Client '$id' failed to send parsable data!\n";
@@ -262,7 +262,7 @@ event 'relayd_disconnected' => sub {
   }
   return;
 };
- 
+
 event 'relayd_client_input' => sub {
   my ($kernel,$self,$id,$data) = @_[KERNEL,OBJECT,ARG0,ARG1];
   $self->_requests->{$id} .= $data;
@@ -287,7 +287,7 @@ event 'process_report' => sub {
     map { ( $_ => $data->{$_} ) } qw(grade osname osversion archname perl_version textreport)
   });
 
-  # TestSummary happens to be the same as content metadata 
+  # TestSummary happens to be the same as content metadata
   # of LegacyReport for now
   $metabase_report->add( 'CPAN::Testers::Fact::TestSummary' =>
     [$metabase_report->facts]->[0]->content_metadata()
@@ -301,7 +301,7 @@ event 'process_report' => sub {
 
 event 'submit_report' => sub {
   my ($kernel,$self,$report) = @_[KERNEL,OBJECT,ARG0];
-  $kernel->post( 
+  $kernel->post(
     $self->queue->get_session_id,
     'submit',
     $report,
@@ -311,11 +311,11 @@ event 'submit_report' => sub {
 
 sub _load_id_file {
   my $self = shift;
-  
+
   open my $fh, '<', $self->id_file
     or Carp::confess __PACKAGE__. ": could not read ID file '$self->id_file'"
     . "\n$!";
-  
+
   my $data = JSON->new->decode( do { local $/; <$fh> } );
 
   my $profile = eval { Metabase::User::Profile->from_struct($data->[0]) }
@@ -332,9 +332,9 @@ sub _load_id_file {
 }
 
 no MooseX::POE;
- 
+
 __PACKAGE__->meta->make_immutable;
- 
+
 1;
 
 
@@ -347,7 +347,7 @@ POE::Component::Metabase::Relay::Server - A Metabase relay server component
 
 =head1 VERSION
 
-version 0.18
+version 0.20
 
 =head1 SYNOPSIS
 
@@ -356,9 +356,9 @@ version 0.18
 
   use POE qw[Component::Metabase::Relay::Server];
 
-  my $test_httpd = POE::Component::Metabase::Relay::Server->spawn( 
-    port    => 8080, 
-    id_file => shift, 
+  my $test_httpd = POE::Component::Metabase::Relay::Server->spawn(
+    port    => 8080,
+    id_file => shift,
     dsn     => 'dbi:SQLite:dbname=dbfile',
     uri     => 'https://metabase.example.foo/',
     debug   => 1,
@@ -370,7 +370,7 @@ version 0.18
 =head1 DESCRIPTION
 
 POE::Component::Metabase::Relay::Server is a relay server for L<Metabase>. It provides a listener
-that accepts connections from L<Test::Reporter::Transport::Socket> based CPAN Testers and 
+that accepts connections from L<Test::Reporter::Transport::Socket> based CPAN Testers and
 relays the L<Storable> serialised data to L<Metabase> using L<POE::Component::Metabase::Client::Submit>.
 
 =for Pod::Coverage START
@@ -434,7 +434,7 @@ Chris Williams <chris@bingosnet.co.uk>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Chris Williams.
+This software is copyright (c) 2011 by Chris Williams.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

@@ -8,7 +8,7 @@ build_requires:
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.101900, CPAN::Meta::Converter version 2.102160'
+generated_by: 'Dist::Zilla version 4.200004, CPAN::Meta::Converter version 2.110580'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -30,10 +30,11 @@ requires:
   MooseX::POE: 0.205
   MooseX::Types::Path::Class: 0.05
   MooseX::Types::URI: 0.02
-  POE: 1.287
-  POE::Component::Client::HTTP: 0.895
+  POE: 1.299
+  POE::Component::Client::HTTP: 0.942
   POE::Component::EasyDBI: 1.23
-  POE::Component::Metabase::Client::Submit: 0.02
+  POE::Component::Metabase::Client::Submit: 0.12
+  POE::Component::Resolver: 0.911
   Params::Util: 1.01
   Storable: 0
   Test::POE::Server::TCP: 1.12
@@ -43,4 +44,4 @@ requires:
 resources:
   homepage: http://github.com/bingos/poe-component-metabase-relay-server/tree
   repository: git://github.com/bingos/poe-component-metabase-relay-server.git
-version: 0.18
+version: 0.20

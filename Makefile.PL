@@ -38,17 +38,18 @@ my %WriteMakefileArgs = (
     'MooseX::POE' => '0.205',
     'MooseX::Types::Path::Class' => '0.05',
     'MooseX::Types::URI' => '0.02',
-    'POE' => '1.287',
-    'POE::Component::Client::HTTP' => '0.895',
+    'POE' => '1.299',
+    'POE::Component::Client::HTTP' => '0.942',
     'POE::Component::EasyDBI' => '1.23',
-    'POE::Component::Metabase::Client::Submit' => '0.02',
+    'POE::Component::Metabase::Client::Submit' => '0.12',
+    'POE::Component::Resolver' => '0.911',
     'Params::Util' => '1.01',
     'Storable' => '0',
     'Test::POE::Server::TCP' => '1.12',
     'Time::HiRes' => '0',
     'URI' => '1.52'
   },
-  'VERSION' => '0.18',
+  'VERSION' => '0.20',
   'test' => {
     'TESTS' => 't/*.t'
   }

@@ -3,7 +3,7 @@ NAME
     component
 
 VERSION
-    version 0.18
+    version 0.20
 
 SYNOPSIS
       use strict;
@@ -11,9 +11,9 @@ SYNOPSIS
 
       use POE qw[Component::Metabase::Relay::Server];
 
-      my $test_httpd = POE::Component::Metabase::Relay::Server->spawn( 
-        port    => 8080, 
-        id_file => shift, 
+      my $test_httpd = POE::Component::Metabase::Relay::Server->spawn(
+        port    => 8080,
+        id_file => shift,
         dsn     => 'dbi:SQLite:dbname=dbfile',
         uri     => 'https://metabase.example.foo/',
         debug   => 1,
@@ -84,7 +84,7 @@ AUTHOR
     Chris Williams <chris@bingosnet.co.uk>
 
 COPYRIGHT AND LICENSE
-    This software is copyright (c) 2010 by Chris Williams.
+    This software is copyright (c) 2011 by Chris Williams.
 
     This is free software; you can redistribute it and/or modify it under
     the same terms as the Perl 5 programming language system itself.

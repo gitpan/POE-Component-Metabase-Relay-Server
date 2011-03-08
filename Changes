@@ -1,4 +1,20 @@
 ==============================
+2011-03-08 13:27:15 +0000 0.20
+==============================
+
+  commit 691ea2436e7222cdd178eb2637c2c4592ff4d032
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Tue Mar 8 13:27:15 2011 +0000
+  
+    Bump version to 0.20
+
+  commit b5ccebd9469357f0d9c409faa4d4585664daa92d
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Tue Mar 8 13:25:46 2011 +0000
+  
+    Update required versions of prereqs and add new prereqs. 
+
+==============================
 2010-08-13 12:06:39 +0100 0.18
 ==============================
 
@@ -322,6 +338,6 @@
     POE::Component::Metabase::Client::Submit to spawn a HTTP poco for
     each submit instead of using a common HTTP poco. 
 
-===================================
-End of changes in the last 365 days
-===================================
+====================================
+End of changes in the last 1825 days
+====================================
