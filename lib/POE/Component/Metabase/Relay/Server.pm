@@ -1,6 +1,6 @@
 package POE::Component::Metabase::Relay::Server;
 BEGIN {
-  $POE::Component::Metabase::Relay::Server::VERSION = '0.20';
+  $POE::Component::Metabase::Relay::Server::VERSION = '0.22';
 }
 
 # ABSTRACT: A Metabase relay server component
@@ -347,7 +347,7 @@ POE::Component::Metabase::Relay::Server - A Metabase relay server component
 
 =head1 VERSION
 
-version 0.20
+version 0.22
 
 =head1 SYNOPSIS
 

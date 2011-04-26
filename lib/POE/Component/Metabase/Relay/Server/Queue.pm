@@ -1,6 +1,6 @@
 package POE::Component::Metabase::Relay::Server::Queue;
 BEGIN {
-  $POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.20';
+  $POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.22';
 }
 
 # ABSTRACT: Submission queue for the metabase relay
@@ -185,7 +185,7 @@ sub spawn {
 sub START {
   my ($kernel,$self) = @_[KERNEL,OBJECT];
   $self->_build_table;
-  $kernel->yield( 'do_vacuum' );
+  $kernel->yield( 'do_vacuum', 'process' );
   if ( $self->multiple ) {
     $self->_set_resolver( POE::Component::Resolver->new() );
   }
@@ -230,11 +230,12 @@ sub _build_table {
 }
 
 event 'do_vacuum' => sub {
-  my ($kernel,$self) = @_[KERNEL,OBJECT];
+  my ($kernel,$self,$process) = @_[KERNEL,OBJECT,ARG0];
   $self->_easydbi->do(
     sql => 'VACUUM',
     event => '_generic_db_result',
     _ts => $self->_time,
+    ( $process ? ( _process => 1 ) : () ),
   );
 
   $kernel->delay( 'do_vacuum' => DELAY * 60 );
@@ -405,7 +406,7 @@ POE::Component::Metabase::Relay::Server::Queue - Submission queue for the metaba
 
 =head1 VERSION
 
-version 0.20
+version 0.22
 
 =head1 DESCRIPTION
 
