@@ -4,7 +4,7 @@
       "Chris Williams <chris@bingosnet.co.uk>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.200005, CPAN::Meta::Converter version 2.110930",
+   "generated_by" : "Dist::Zilla version 4.300003, CPAN::Meta::Converter version 2.112621",
    "license" : [
       "perl_5"
    ],
@@ -41,7 +41,7 @@
             "MooseX::AttributeHelpers" : "0.23",
             "MooseX::POE" : "0.205",
             "MooseX::Types::Path::Class" : "0.05",
-            "MooseX::Types::URI" : "0.02",
+            "MooseX::Types::URI" : "0.03",
             "POE" : "1.299",
             "POE::Component::Client::HTTP" : "0.942",
             "POE::Component::EasyDBI" : "1.23",
@@ -58,13 +58,13 @@
    },
    "release_status" : "stable",
    "resources" : {
-      "homepage" : "http://github.com/bingos/poe-component-metabase-relay-server/tree",
+      "homepage" : "https://github.com/bingos/poe-component-metabase-relay-server",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/bingos/poe-component-metabase-relay-server.git",
-         "web" : "http://github.com/bingos/poe-component-metabase-relay-server/tree"
+         "url" : "https://github.com/bingos/poe-component-metabase-relay-server.git",
+         "web" : "https://github.com/bingos/poe-component-metabase-relay-server"
       }
    },
-   "version" : "0.22"
+   "version" : "0.24"
 }
 

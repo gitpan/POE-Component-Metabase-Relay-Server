@@ -1,4 +1,14 @@
 ==============================
+2011-11-17 22:00:44 +0000 0.24
+==============================
+
+  commit b189f0e317e83ecad803bb5fe8013a7ddb89243d
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Thu Nov 17 22:00:44 2011 +0000
+  
+    Update required version of MooseX::Types::URI 
+
+==============================
 2011-04-27 00:01:37 +0100 0.22
 ==============================
 
