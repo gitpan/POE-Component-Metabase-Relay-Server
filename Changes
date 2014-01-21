@@ -1,370 +1,462 @@
-==============================
-2011-11-17 22:00:44 +0000 0.24
-==============================
+==================================================
+Changes from 2009-01-22 00:00:00 +0000 to present.
+==================================================
 
-  commit b189f0e317e83ecad803bb5fe8013a7ddb89243d
+-----------------------------------------
+version 0.26 at 2014-01-21 19:10:05 +0000
+-----------------------------------------
+
+  Change: 9a9bbd9864a57aa0da1146fc486f4c82b2016753
   Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
-  Date:   Thu Nov 17 22:00:44 2011 +0000
-  
+  Date : 2014-01-21 19:10:05 +0000
+
+    Resolve issue with constraints and _set_resolver
+
+    Tidy up stringification of id_file warnings 
+
+-----------------------------------------
+version 0.24 at 2011-11-17 22:00:44 +0000
+-----------------------------------------
+
+  Change: b189f0e317e83ecad803bb5fe8013a7ddb89243d
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date : 2011-11-17 22:00:44 +0000
+
     Update required version of MooseX::Types::URI 
 
-==============================
-2011-04-27 00:01:37 +0100 0.22
-==============================
+-----------------------------------------
+version 0.22 at 2011-04-26 23:01:37 +0000
+-----------------------------------------
 
-  commit bce1de1360ee41919392abd33b0cbc91d31e679d
+  Change: bce1de1360ee41919392abd33b0cbc91d31e679d
   Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
-  Date:   Wed Apr 27 00:01:37 2011 +0100
-  
-    Bump version
+  Date : 2011-04-27 00:01:37 +0000
 
-  commit 0cc49e1cf7cd09120a9d0e3f095d849d7400272c
+    Bump version 
+
+  Change: 0cc49e1cf7cd09120a9d0e3f095d849d7400272c
   Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
-  Date:   Wed Apr 27 00:00:38 2011 +0100
-  
+  Date : 2011-04-27 00:00:38 +0000
+
     Ensure that queue processing starts immediately on startup if there
     are backlogged requests 
 
-==============================
-2011-03-08 13:27:15 +0000 0.20
-==============================
+-----------------------------------------
+version 0.20 at 2011-03-08 13:27:15 +0000
+-----------------------------------------
 
-  commit 691ea2436e7222cdd178eb2637c2c4592ff4d032
+  Change: 691ea2436e7222cdd178eb2637c2c4592ff4d032
   Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
-  Date:   Tue Mar 8 13:27:15 2011 +0000
-  
-    Bump version to 0.20
+  Date : 2011-03-08 13:27:15 +0000
 
-  commit b5ccebd9469357f0d9c409faa4d4585664daa92d
+    Bump version to 0.20 
+
+  Change: b5ccebd9469357f0d9c409faa4d4585664daa92d
   Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
-  Date:   Tue Mar 8 13:25:46 2011 +0000
-  
+  Date : 2011-03-08 13:25:46 +0000
+
     Update required versions of prereqs and add new prereqs. 
 
-==============================
-2010-08-13 12:06:39 +0100 0.18
-==============================
+-----------------------------------------
+version 0.18 at 2010-08-13 11:06:39 +0000
+-----------------------------------------
 
-  commit 75d1ff9d208127acac6f31d0b3a05fa233898636
+  Change: 75d1ff9d208127acac6f31d0b3a05fa233898636
   Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
-  Date:   Fri Aug 13 12:06:39 2010 +0100
-  
+  Date : 2010-08-13 12:06:39 +0000
+
     Added extra debug info when we receive data we can't parse. Enqueued
     event generation to the queue. 
 
-==============================
-2010-07-08 14:33:14 +0100 0.16
-==============================
+-----------------------------------------
+version 0.16 at 2010-07-08 13:33:14 +0000
+-----------------------------------------
 
-  commit 8879c31d6a5c5f0516c03c8de8407ed0f5681cdd
+  Change: 8879c31d6a5c5f0516c03c8de8407ed0f5681cdd
   Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
-  Date:   Thu Jul 8 14:33:14 2010 +0100
-  
+  Date : 2010-07-08 14:33:14 +0000
+
     fixed slight issues with the 'session' detection 
 
-==============================
-2010-07-08 11:39:49 +0100 0.14
-==============================
+-----------------------------------------
+version 0.14 at 2010-07-08 10:39:49 +0000
+-----------------------------------------
 
-  commit cebaa2cee3a8a20a4c26c42861f237e8315f3691
+  Change: cebaa2cee3a8a20a4c26c42861f237e8315f3691
   Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
-  Date:   Thu Jul 8 11:39:49 2010 +0100
-  
-    Fix the POD
+  Date : 2010-07-08 11:39:49 +0000
 
-  commit 647cfcfd41f21cf710d2687d0c65f8d5d9eb727c
-  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
-  Date:   Thu Jul 8 11:24:57 2010 +0100
-  
-    Added 'session' and 'recv_event' parameters
+    Fix the POD 
 
-  commit d2f6d7bb4b35420058a715f3f2e9f7cad22a70d1
+  Change: 647cfcfd41f21cf710d2687d0c65f8d5d9eb727c
   Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
-  Date:   Wed Jul 7 22:01:22 2010 +0100
-  
+  Date : 2010-07-08 11:24:57 +0000
+
+    Added 'session' and 'recv_event' parameters 
+
+  Change: d2f6d7bb4b35420058a715f3f2e9f7cad22a70d1
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date : 2010-07-07 22:01:22 +0000
+
     Added test and an example metabase profile file, found and fixed
-    errors.
+    errors. 
 
-  commit 44c32077bfe420acc5498e59559905195b06e3c6
+  Change: 44c32077bfe420acc5498e59559905195b06e3c6
   Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
-  Date:   Wed Jul 7 12:50:33 2010 +0100
-  
+  Date : 2010-07-07 12:50:33 +0000
+
     Switched distribution to Dist::Zilla 
 
-==============================
-2010-04-30 15:40:37 +0100 0.12
-==============================
+-----------------------------------------
+version 0.12 at 2010-04-30 14:40:37 +0000
+-----------------------------------------
 
-  commit 000ec9a059208e41a6dc5ab08856397ac571a5c5
+  Change: 000ec9a059208e41a6dc5ab08856397ac571a5c5
   Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Fri Apr 30 15:40:37 2010 +0100
-  
-    Bump version to 0.12
+  Date : 2010-04-30 15:40:37 +0000
 
-  commit 8291bea87907e163157d6a6a644bae7ecd17ca09
+    Bump version to 0.12 
+
+  Change: 8291bea87907e163157d6a6a644bae7ecd17ca09
   Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Fri Apr 30 15:36:33 2010 +0100
-  
-    Sync up
+  Date : 2010-04-30 15:39:14 +0000
 
-  commit 3e16f27b007eaa8c7d84e135b6204a43ec24977b
-  Author: Florian Ragwitz <rafl@debian.org>
-  Date:   Fri Apr 30 16:15:14 2010 +0200
-  
-    Stop importing all of Socket::.
+    Sync up 
 
-  commit 5019807fa208b95c8d2d1a3d6536a79a11f0ea17
+  Change: 3e16f27b007eaa8c7d84e135b6204a43ec24977b
   Author: Florian Ragwitz <rafl@debian.org>
-  Date:   Fri Apr 30 16:14:54 2010 +0200
-  
+  Date : 2010-04-30 16:15:14 +0000
+
+    Stop importing all of Socket::. 
+
+  Change: 5019807fa208b95c8d2d1a3d6536a79a11f0ea17
+  Author: Florian Ragwitz <rafl@debian.org>
+  Date : 2010-04-30 16:14:54 +0000
+
     Disable pod tests for users. 
 
-==============================
-2010-04-29 00:41:20 +0100 0.10
-==============================
+-----------------------------------------
+version 0.10 at 2010-04-28 23:41:20 +0000
+-----------------------------------------
 
-  commit b9977e94b3ba4d045f55429014b5d08d82f6f8bc
+  Change: b9977e94b3ba4d045f55429014b5d08d82f6f8bc
   Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Thu Apr 29 00:41:20 2010 +0100
-  
-    Bump version
+  Date : 2010-04-29 00:41:20 +0000
 
-  commit 0f977a647480768e50f3472f1caa7990734b8bad
+    Bump version 
+
+  Change: 0f977a647480768e50f3472f1caa7990734b8bad
   Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Thu Apr 29 00:39:09 2010 +0100
-  
-    Sync up
+  Date : 2010-04-29 00:39:31 +0000
 
-  commit 14faaf90e398adbb524dae7ac2e99da28954b247
-  Author: Florian Ragwitz <rafl@debian.org>
-  Date:   Thu Apr 29 05:24:58 2010 +0800
-  
-    Better diagnostics in debug mode.
+    Sync up 
 
-  commit 77935fac95503883c634e07f92733a42dadf90a5
+  Change: 14faaf90e398adbb524dae7ac2e99da28954b247
   Author: Florian Ragwitz <rafl@debian.org>
-  Date:   Thu Apr 29 04:57:06 2010 +0800
-  
+  Date : 2010-04-29 07:38:23 +0000
+
+    Better diagnostics in debug mode. 
+
+  Change: 77935fac95503883c634e07f92733a42dadf90a5
+  Author: Florian Ragwitz <rafl@debian.org>
+  Date : 2010-04-29 07:38:22 +0000
+
     Simplify handling of multiple addresses. 
 
-==============================
-2010-04-28 23:05:48 +0100 0.08
-==============================
+-----------------------------------------
+version 0.08 at 2010-04-28 22:05:48 +0000
+-----------------------------------------
 
-  commit 4bcc5c5654543450b942675a35dbefdecad1ad77
+  Change: 4bcc5c5654543450b942675a35dbefdecad1ad77
   Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Wed Apr 28 23:05:48 2010 +0100
-  
-    Last tweaks.
+  Date : 2010-04-28 23:05:48 +0000
 
-  commit a565afec2ecb447f1fc23f86fa76237af60cd47d
-  Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Wed Apr 28 21:46:30 2010 +0100
-  
-    Bump version
+    Last tweaks. 
 
-  commit 22ab11cad9857439de19b2e0a58b4f365c160542
+  Change: a565afec2ecb447f1fc23f86fa76237af60cd47d
   Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Tue Apr 27 23:02:16 2010 +0100
-  
+  Date : 2010-04-28 21:46:30 +0000
+
+    Bump version 
+
+  Change: 22ab11cad9857439de19b2e0a58b4f365c160542
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-04-27 23:02:16 +0000
+
     Enable 'address' to be a string or an arrayref of addresses to bind
-    to.
+    to. 
 
-  commit 1ed58f5c009ee8638705b32ab2c6fe8945a442eb
+  Change: 1ed58f5c009ee8638705b32ab2c6fe8945a442eb
   Author: Florian Ragwitz <rafl@debian.org>
-  Date:   Wed Apr 28 01:16:26 2010 +0800
-  
-    Also require M::I::GithubMeta.
+  Date : 2010-04-28 01:43:16 +0000
 
-  commit f2afff8797211bab75328a3a0ac4e429147a1149
-  Author: Florian Ragwitz <rafl@debian.org>
-  Date:   Wed Apr 28 00:44:47 2010 +0800
-  
-    Update README.
+    Also require M::I::GithubMeta. 
 
-  commit 5365bc94648ca4a43717357683b12c2ca01dd259
+  Change: f2afff8797211bab75328a3a0ac4e429147a1149
   Author: Florian Ragwitz <rafl@debian.org>
-  Date:   Wed Apr 28 00:43:46 2010 +0800
-  
+  Date : 2010-04-28 01:13:24 +0000
+
+    Update README. 
+
+  Change: 5365bc94648ca4a43717357683b12c2ca01dd259
+  Author: Florian Ragwitz <rafl@debian.org>
+  Date : 2010-04-28 01:13:24 +0000
+
     Specify the required M::I extensions
 
     Make contributor's lifes easier by not having them figure out which
-    M::I extension is missing from an AUTOLOAD-generated error message.
+    M::I extension is missing from an AUTOLOAD-generated error message. 
 
-  commit 9a6403d6de252d8c5eca5200fe412b1bf15b1ef9
+  Change: 9a6403d6de252d8c5eca5200fe412b1bf15b1ef9
   Author: Apocalypse <perl@0ne.us>
-  Date:   Sun Apr 25 10:21:20 2010 -0700
-  
-    found 1 more debug output to disable
+  Date : 2010-04-25 10:21:20 +0000
 
-  commit 1740022bf4b73b0f6bdcbeb351721ff206ff2c49
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 24 17:13:32 2010 -0700
-  
-    disable yet more debug output
+    found 1 more debug output to disable 
 
-  commit 0788cdf330080379ce018b498a76b64689329a6e
+  Change: 1740022bf4b73b0f6bdcbeb351721ff206ff2c49
   Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 24 16:10:32 2010 -0700
-  
-    comment out queue db timing, it's unnecessary debug info now :)
+  Date : 2010-04-24 17:13:32 +0000
 
-  commit c38f09edade08ebdc2da1ca95c09bcf92a923b78
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 24 16:02:46 2010 -0700
-  
-    typo in ts, d0h
+    disable yet more debug output 
 
-  commit 32087b9f08432a692873e30aa794b424bc6e09b9
+  Change: 0788cdf330080379ce018b498a76b64689329a6e
   Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 24 16:00:38 2010 -0700
-  
-    add indexes to speed up searching and add SQLite PRAMGA synchronous
+  Date : 2010-04-24 16:10:32 +0000
 
-  commit 3f98b056fe16851f1c0b586f0856987fc2897e08
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 24 14:51:05 2010 -0700
-  
-    add missing ts for VACUUM
+    comment out queue db timing, it's unnecessary debug info now :) 
 
-  commit 1ff8b4c4c37647d199c2de61a8447388b889f4cd
+  Change: c38f09edade08ebdc2da1ca95c09bcf92a923b78
   Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 24 14:47:06 2010 -0700
-  
-    add timing for DB operations because I think SQLite is slow :(
+  Date : 2010-04-24 16:02:46 +0000
 
-  commit ec2a38f1c59a19e183597b3b14036da6fc99be31
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 24 14:25:27 2010 -0700
-  
-    silence some more debug output
+    typo in ts, d0h 
 
-  commit 453ca3a6eab7377777d1f73fc65e4159ec3c3260
+  Change: 32087b9f08432a692873e30aa794b424bc6e09b9
   Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 24 14:24:12 2010 -0700
-  
-    add 'submissions' to control parallelism, and add timing output
+  Date : 2010-04-24 16:00:38 +0000
 
-  commit 0f69d3e9276a1a2581c8bcf21ea620841c6b35a9
+    add indexes to speed up searching and add SQLite PRAMGA synchronous 
+
+  Change: 3f98b056fe16851f1c0b586f0856987fc2897e08
   Author: Apocalypse <perl@0ne.us>
-  Date:   Fri Apr 23 12:02:06 2010 -0700
-  
+  Date : 2010-04-24 14:51:05 +0000
+
+    add missing ts for VACUUM 
+
+  Change: 1ff8b4c4c37647d199c2de61a8447388b889f4cd
+  Author: Apocalypse <perl@0ne.us>
+  Date : 2010-04-24 14:47:06 +0000
+
+    add timing for DB operations because I think SQLite is slow :( 
+
+  Change: ec2a38f1c59a19e183597b3b14036da6fc99be31
+  Author: Apocalypse <perl@0ne.us>
+  Date : 2010-04-24 14:25:27 +0000
+
+    silence some more debug output 
+
+  Change: 453ca3a6eab7377777d1f73fc65e4159ec3c3260
+  Author: Apocalypse <perl@0ne.us>
+  Date : 2010-04-24 14:24:12 +0000
+
+    add 'submissions' to control parallelism, and add timing output 
+
+  Change: 0f69d3e9276a1a2581c8bcf21ea620841c6b35a9
+  Author: Apocalypse <perl@0ne.us>
+  Date : 2010-04-23 12:02:06 +0000
+
     remove unnecessary debug output, with the previous patch it's now
-    spamming the logs
+    spamming the logs 
 
-  commit 7fcfb569b7778db534180b950e9eb2f21bf3c44b
+  Change: 7fcfb569b7778db534180b950e9eb2f21bf3c44b
   Author: Apocalypse <perl@0ne.us>
-  Date:   Fri Apr 23 11:48:14 2010 -0700
-  
+  Date : 2010-04-23 11:48:14 +0000
+
     fix a bug in relaying when no reports is submitted but have N reports
-    queued
+    queued 
 
-  commit 57030793229d278661b16ab7ea6c1cf5bd42bad6
+  Change: 57030793229d278661b16ab7ea6c1cf5bd42bad6
   Author: Apocalypse <perl@0ne.us>
-  Date:   Thu Apr 22 15:08:14 2010 -0700
-  
-    add no_relay option to control relaying
+  Date : 2010-04-22 15:08:14 +0000
 
-  commit 9997de2bcf117f6dee74a428990028c4fd993a03
+    add no_relay option to control relaying 
+
+  Change: 9997de2bcf117f6dee74a428990028c4fd993a03
   Author: Apocalypse <perl@0ne.us>
-  Date:   Sun Apr 11 21:56:39 2010 +0100
-  
-    fix content error when metabase-server returns auth failure with no
-    content
+  Date : 2010-04-11 21:56:39 +0000
 
-  commit f76cd2c04d36b34ca9d4b0aef9bee50e27fb7fa9
-  Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Sun Apr 11 21:53:35 2010 +0100
-  
-    Revert "fix content error when metabase-server returns auth failure
-    with no content"
-
-    This reverts commit bdfd90188489fde8efc1df18ba52ad178160fc4b.
-
-  commit b98df9b3d14ba570162ba35945e0d25c8767d176
-  Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Sun Apr 11 21:35:39 2010 +0100
-  
-    Sync in updated Changes
-
-  commit b4f2ae27807fded7f1b065fab2c79196bebe75f2
-  Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Mon Apr 5 22:47:36 2010 +0100
-  
-    Version bump
-
-  commit e1298477c8be9eca344114c615c9dcaf0b1713b3
-  Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Mon Apr 5 22:34:42 2010 +0100
-  
-    Updated Changes
-
-  commit bdfd90188489fde8efc1df18ba52ad178160fc4b
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Sun Apr 11 10:31:05 2010 -0700
-  
     fix content error when metabase-server returns auth failure with no
     content 
 
-==============================
-2010-04-05 22:47:36 +0100 0.06
-==============================
-
-  commit 8d05b5d6d9d66d406aab523b9fa16c26f06031be
+  Change: f76cd2c04d36b34ca9d4b0aef9bee50e27fb7fa9
   Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Mon Apr 5 22:47:36 2010 +0100
-  
-    Version bump
+  Date : 2010-04-11 21:53:35 +0000
 
-  commit 41caea60dc0f9e8c6f563037bbcc1d9a4d4a5f44
+    Revert "fix content error when metabase-server returns auth failure
+    with no content"
+
+    This reverts commit bdfd90188489fde8efc1df18ba52ad178160fc4b. 
+
+  Change: be2ec66b22b390bf1ad286c3f3481b34f3e714b8
   Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Mon Apr 5 22:34:42 2010 +0100
-  
-    Updated Changes
+  Date : 2010-04-11 21:47:49 +0000
 
-  commit 0873c12ec1ab298bde4d23c951ac3eee8d501549
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 3 16:58:58 2010 -0700
-  
-    add VACUUM so we keep the db small
+    Merge branch 'master' of
+    github.com:bingos/poe-component-metabase-relay-server
 
-  commit 1c4f1a24ef2a651f00f0576effedd00dc9480add
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 3 15:44:37 2010 -0700
-  
-    use delay_add to delete entries from processing cache to fix a bug
+    Conflicts:
 
-  commit 4d503a0a72ab1887ca767ab77cab55f10994a38d
+    Changes 
+
+  Change: b98df9b3d14ba570162ba35945e0d25c8767d176
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-04-11 21:36:00 +0000
+
+    Sync in updated Changes 
+
+  Change: b4f2ae27807fded7f1b065fab2c79196bebe75f2
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-04-11 21:35:59 +0000
+
+    Version bump 
+
+  Change: e1298477c8be9eca344114c615c9dcaf0b1713b3
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-04-11 21:35:59 +0000
+
+    Updated Changes 
+
+  Change: bdfd90188489fde8efc1df18ba52ad178160fc4b
   Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 3 15:36:15 2010 -0700
-  
+  Date : 2010-04-11 10:31:05 +0000
+
+    fix content error when metabase-server returns auth failure with no
+    content 
+
+-----------------------------------------
+version 0.06 at 2010-04-05 21:47:36 +0000
+-----------------------------------------
+
+  Change: 8d05b5d6d9d66d406aab523b9fa16c26f06031be
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-04-05 22:47:36 +0000
+
+    Version bump 
+
+  Change: 41caea60dc0f9e8c6f563037bbcc1d9a4d4a5f44
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-04-05 22:39:49 +0000
+
+    Updated Changes 
+
+  Change: 0873c12ec1ab298bde4d23c951ac3eee8d501549
+  Author: Apocalypse <perl@0ne.us>
+  Date : 2010-04-03 16:58:58 +0000
+
+    add VACUUM so we keep the db small 
+
+  Change: 1c4f1a24ef2a651f00f0576effedd00dc9480add
+  Author: Apocalypse <perl@0ne.us>
+  Date : 2010-04-03 15:44:37 +0000
+
+    use delay_add to delete entries from processing cache to fix a bug 
+
+  Change: 4d503a0a72ab1887ca767ab77cab55f10994a38d
+  Author: Apocalypse <perl@0ne.us>
+  Date : 2010-04-03 15:36:15 +0000
+
     add caching logic so we don't process same guid more than twice in
-    the same session
+    the same session 
 
-  commit 11a3f640772eb3a2497c4e488bb79e25f47479e2
+  Change: 11a3f640772eb3a2497c4e488bb79e25f47479e2
   Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 3 14:44:06 2010 -0700
-  
-    tweak debug printouts
+  Date : 2010-04-03 14:44:06 +0000
 
-  commit 3ce287a7c1e882c208a6a0d81d6e04c0752c1b7b
+    tweak debug printouts 
+
+  Change: 3ce287a7c1e882c208a6a0d81d6e04c0752c1b7b
   Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Apr 3 14:18:48 2010 -0700
-  
+  Date : 2010-04-03 14:18:48 +0000
+
     add more debugging printouts and fix some SQL bugs 
 
-==============================
-2010-04-01 10:27:31 +0100 0.04
-==============================
+-----------------------------------------
+version 0.04 at 2010-04-01 09:27:31 +0000
+-----------------------------------------
 
-  commit 025e85bf315d3fc956b1c7e55f9ee3cf89c1349a
+  Change: 025e85bf315d3fc956b1c7e55f9ee3cf89c1349a
   Author: Chris Williams <chris@bingosnet.co.uk>
-  Date:   Thu Apr 1 10:27:31 2010 +0100
-  
+  Date : 2010-04-01 10:27:31 +0000
+
     Added an option 'multiple' that enables
     POE::Component::Metabase::Client::Submit to spawn a HTTP poco for
     each submit instead of using a common HTTP poco. 
 
-====================================
-End of changes in the last 1825 days
-====================================
+-----------------------------------------
+version 0.02 at 2010-03-29 22:44:49 +0000
+-----------------------------------------
+
+  Change: c9a7134ef9498fe601dd98dca6e72e3b95fd1991
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-03-29 23:44:49 +0000
+
+    pesky pod coverage 
+
+  Change: bec1e68fea410d0a9e213796beab350d2ed32435
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-03-29 23:36:16 +0000
+
+    Update MANIFESTO 
+
+  Change: 920c556ab9c67f20e0d91a0a4f38ef9ea6ad30aa
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-03-29 23:22:37 +0000
+
+    Things required for a CPAN release 
+
+  Change: 35a6e91108e35fd1c58953aaeef50d847dcb32dd
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-03-29 22:35:30 +0000
+
+    Add the ubiquitous pod tests 
+
+  Change: fcd220a6016b4ef428be4bc0602db0923a705fb6
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-03-29 22:29:50 +0000
+
+    Docs and examples 
+
+  Change: 6669537a5f9b3227826866b6e54e18e197a9dbd2
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-03-25 14:54:57 +0000
+
+    Wrap the CPAN::Testers::Report creation in an eval{} due to pesky
+    dists 
+
+  Change: a177e17dc7e48f5efa6b912d20959b21474f16e1
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-03-23 22:14:10 +0000
+
+    Meep 
+
+  Change: d6887a93da1ac766cd299df1cb086b8703035c62
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-03-21 16:54:15 +0000
+
+    Things 
+
+  Change: a5b2b3bd5ee2f24f1c4533c4d05b1dcdec6eaeb5
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-03-19 16:31:34 +0000
+
+    Updated our prereqs list (again). 
+
+  Change: d4c0e3b091898442acfcb33aa68bab1d0ac11578
+  Author: Chris Williams <chris@bingosnet.co.uk>
+  Date : 2010-03-18 15:48:12 +0000
+
+    Here be dragons 
+
+================
+End of releases.
+================

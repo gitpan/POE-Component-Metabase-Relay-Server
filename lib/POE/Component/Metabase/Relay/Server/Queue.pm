@@ -1,8 +1,5 @@
 package POE::Component::Metabase::Relay::Server::Queue;
-{
-  $POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.24';
-}
-
+$POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.26';
 # ABSTRACT: Submission queue for the metabase relay
 
 use strict;
@@ -152,7 +149,7 @@ has _http_alias => (
 
 has _resolver => (
   is => 'ro',
-  isa => 'Str',
+  isa => 'POE::Component::Resolver',
   init_arg => undef,
   writer => '_set_resolver',
 );
@@ -396,9 +393,11 @@ __PACKAGE__->meta->make_immutable;
 
 1;
 
-
 __END__
+
 =pod
+
+=encoding UTF-8
 
 =head1 NAME
 
@@ -406,7 +405,7 @@ POE::Component::Metabase::Relay::Server::Queue - Submission queue for the metaba
 
 =head1 VERSION
 
-version 0.24
+version 0.26
 
 =head1 DESCRIPTION
 
@@ -480,10 +479,9 @@ Chris Williams <chris@bingosnet.co.uk>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Chris Williams.
+This software is copyright (c) 2014 by Chris Williams.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

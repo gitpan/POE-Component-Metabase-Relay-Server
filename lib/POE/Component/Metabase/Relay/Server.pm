@@ -1,8 +1,5 @@
 package POE::Component::Metabase::Relay::Server;
-{
-  $POE::Component::Metabase::Relay::Server::VERSION = '0.24';
-}
-
+$POE::Component::Metabase::Relay::Server::VERSION = '0.26';
 # ABSTRACT: A Metabase relay server component
 
 use strict;
@@ -313,18 +310,18 @@ sub _load_id_file {
   my $self = shift;
 
   open my $fh, '<', $self->id_file
-    or Carp::confess __PACKAGE__. ": could not read ID file '$self->id_file'"
-    . "\n$!";
+    or Carp::confess __PACKAGE__. ": could not read ID file '" . $self->id_file
+    . "'\n$!";
 
   my $data = JSON->new->decode( do { local $/; <$fh> } );
 
   my $profile = eval { Metabase::User::Profile->from_struct($data->[0]) }
     or Carp::confess __PACKAGE__ . ": could not load Metabase profile\n"
-    . "from '$self->id_file':\n$@";
+    . "from '" . $self->id_file . "':\n$@";
 
   my $secret = eval { Metabase::User::Secret->from_struct($data->[1]) }
     or Carp::confess __PACKAGE__ . ": could not load Metabase secret\n"
-    . "from '$self->id_file':\n $@";
+    . "from '" . $self->id_file . "':\n $@";
 
   $self->_set_profile( $profile );
   $self->_set_secret( $secret );
@@ -337,9 +334,11 @@ __PACKAGE__->meta->make_immutable;
 
 1;
 
-
 __END__
+
 =pod
+
+=encoding UTF-8
 
 =head1 NAME
 
@@ -347,7 +346,7 @@ POE::Component::Metabase::Relay::Server - A Metabase relay server component
 
 =head1 VERSION
 
-version 0.24
+version 0.26
 
 =head1 SYNOPSIS
 
@@ -434,10 +433,9 @@ Chris Williams <chris@bingosnet.co.uk>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Chris Williams.
+This software is copyright (c) 2014 by Chris Williams.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
