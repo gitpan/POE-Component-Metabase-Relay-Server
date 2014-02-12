@@ -1,5 +1,5 @@
 package POE::Component::Metabase::Relay::Server::Queue;
-$POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.26';
+$POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.28';
 # ABSTRACT: Submission queue for the metabase relay
 
 use strict;
@@ -405,7 +405,7 @@ POE::Component::Metabase::Relay::Server::Queue - Submission queue for the metaba
 
 =head1 VERSION
 
-version 0.26
+version 0.28
 
 =head1 DESCRIPTION
 
