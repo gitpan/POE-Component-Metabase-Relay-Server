@@ -1,5 +1,5 @@
 package POE::Component::Metabase::Relay::Server::Queue;
-$POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.28';
+$POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.30';
 # ABSTRACT: Submission queue for the metabase relay
 
 use strict;
@@ -184,7 +184,7 @@ sub START {
   $self->_build_table;
   $kernel->yield( 'do_vacuum', 'process' );
   if ( $self->multiple ) {
-    $self->_set_resolver( POE::Component::Resolver->new() );
+    $self->_set_resolver( BINGOS::POE::Component::Resolver->new() );
   }
   else {
     $self->_set_http_alias( join '-', __PACKAGE__, $self->get_session_id );
@@ -247,6 +247,8 @@ event 'shutdown' => sub {
     $self->_http_alias,
     'shutdown',
   );
+  $self->_resolver->_really_shutdown
+    if $self->multiple && $self->_resolver;
   return;
 };
 
@@ -391,6 +393,20 @@ no MooseX::POE;
 
 __PACKAGE__->meta->make_immutable;
 
+package
+  BINGOS::POE::Component::Resolver;
+
+use base qw[POE::Component::Resolver];
+
+#noop
+sub shutdown {
+  return;
+}
+
+sub _really_shutdown {
+  shift->SUPER::shutdown;
+}
+
 1;
 
 __END__
@@ -405,7 +421,7 @@ POE::Component::Metabase::Relay::Server::Queue - Submission queue for the metaba
 
 =head1 VERSION
 
-version 0.28
+version 0.30
 
 =head1 DESCRIPTION
 

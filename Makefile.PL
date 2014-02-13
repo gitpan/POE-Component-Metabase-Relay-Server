@@ -39,15 +39,17 @@ my %WriteMakefileArgs = (
     "MooseX::Types::Path::Class" => "0.05",
     "MooseX::Types::URI" => "0.03",
     "POE" => "1.299",
-    "POE::Component::Client::HTTP" => "0.942",
+    "POE::Component::Client::HTTP" => "0.948",
+    "POE::Component::Client::Keepalive" => "0.271",
     "POE::Component::EasyDBI" => "1.23",
     "POE::Component::Metabase::Client::Submit" => "0.12",
-    "POE::Component::Resolver" => "0.911",
+    "POE::Component::Resolver" => "0.921",
     "Params::Util" => "1.01",
     "Storable" => 0,
     "Test::POE::Server::TCP" => "1.12",
     "Time::HiRes" => 0,
-    "URI" => "1.52"
+    "URI" => "1.52",
+    "base" => 0
   },
   "TEST_REQUIRES" => {
     "File::Spec" => 0,
@@ -55,7 +57,7 @@ my %WriteMakefileArgs = (
     "IPC::Open3" => 0,
     "Test::More" => "0.47"
   },
-  "VERSION" => "0.28",
+  "VERSION" => "0.30",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -82,16 +84,18 @@ my %FallbackPrereqs = (
   "MooseX::Types::Path::Class" => "0.05",
   "MooseX::Types::URI" => "0.03",
   "POE" => "1.299",
-  "POE::Component::Client::HTTP" => "0.942",
+  "POE::Component::Client::HTTP" => "0.948",
+  "POE::Component::Client::Keepalive" => "0.271",
   "POE::Component::EasyDBI" => "1.23",
   "POE::Component::Metabase::Client::Submit" => "0.12",
-  "POE::Component::Resolver" => "0.911",
+  "POE::Component::Resolver" => "0.921",
   "Params::Util" => "1.01",
   "Storable" => 0,
   "Test::More" => "0.47",
   "Test::POE::Server::TCP" => "1.12",
   "Time::HiRes" => 0,
-  "URI" => "1.52"
+  "URI" => "1.52",
+  "base" => 0
 );
 
 

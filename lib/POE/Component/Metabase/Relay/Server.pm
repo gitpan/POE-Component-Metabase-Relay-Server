@@ -1,5 +1,5 @@
 package POE::Component::Metabase::Relay::Server;
-$POE::Component::Metabase::Relay::Server::VERSION = '0.28';
+$POE::Component::Metabase::Relay::Server::VERSION = '0.30';
 # ABSTRACT: A Metabase relay server component
 
 use strict;
@@ -346,7 +346,7 @@ POE::Component::Metabase::Relay::Server - A Metabase relay server component
 
 =head1 VERSION
 
-version 0.28
+version 0.30
 
 =head1 SYNOPSIS
 

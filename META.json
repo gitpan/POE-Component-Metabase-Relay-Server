@@ -49,15 +49,17 @@
             "MooseX::Types::Path::Class" : "0.05",
             "MooseX::Types::URI" : "0.03",
             "POE" : "1.299",
-            "POE::Component::Client::HTTP" : "0.942",
+            "POE::Component::Client::HTTP" : "0.948",
+            "POE::Component::Client::Keepalive" : "0.271",
             "POE::Component::EasyDBI" : "1.23",
             "POE::Component::Metabase::Client::Submit" : "0.12",
-            "POE::Component::Resolver" : "0.911",
+            "POE::Component::Resolver" : "0.921",
             "Params::Util" : "1.01",
             "Storable" : "0",
             "Test::POE::Server::TCP" : "1.12",
             "Time::HiRes" : "0",
             "URI" : "1.52",
+            "base" : "0",
             "perl" : "v5.6.0"
          }
       },
@@ -79,6 +81,6 @@
          "web" : "https://github.com/bingos/poe-component-metabase-relay-server"
       }
    },
-   "version" : "0.28"
+   "version" : "0.30"
 }
 
