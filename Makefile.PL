@@ -33,6 +33,7 @@ my %WriteMakefileArgs = (
     "Metabase::Fact" => "0.011",
     "Metabase::User::Profile" => "0.003",
     "Metabase::User::Secret" => "0.003",
+    "Module::Load::Conditional" => 0,
     "Moose" => "1.01",
     "Moose::Util::TypeConstraints" => "1.01",
     "MooseX::POE" => "0.205",
@@ -57,7 +58,7 @@ my %WriteMakefileArgs = (
     "IPC::Open3" => 0,
     "Test::More" => "0.47"
   },
-  "VERSION" => "0.30",
+  "VERSION" => "0.32",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -78,6 +79,7 @@ my %FallbackPrereqs = (
   "Metabase::Fact" => "0.011",
   "Metabase::User::Profile" => "0.003",
   "Metabase::User::Secret" => "0.003",
+  "Module::Load::Conditional" => 0,
   "Moose" => "1.01",
   "Moose::Util::TypeConstraints" => "1.01",
   "MooseX::POE" => "0.205",

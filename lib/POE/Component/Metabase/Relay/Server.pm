@@ -1,5 +1,5 @@
 package POE::Component::Metabase::Relay::Server;
-$POE::Component::Metabase::Relay::Server::VERSION = '0.30';
+$POE::Component::Metabase::Relay::Server::VERSION = '0.32';
 # ABSTRACT: A Metabase relay server component
 
 use strict;
@@ -126,6 +126,12 @@ has 'no_relay' => (
   },
 );
 
+has 'no_curl' => (
+  is => 'ro',
+  isa => 'Bool',
+  default => 0,
+);
+
 has 'submissions' => (
   is => 'rw',
   isa => 'Int',
@@ -198,6 +204,7 @@ sub _build__queue {
     debug    => $self->debug,
     multiple => $self->multiple,
     no_relay => $self->no_relay,
+    no_curl  => $self->no_curl,
     submissions => $self->submissions,
   );
 }
@@ -346,7 +353,7 @@ POE::Component::Metabase::Relay::Server - A Metabase relay server component
 
 =head1 VERSION
 
-version 0.30
+version 0.32
 
 =head1 SYNOPSIS
 
@@ -371,6 +378,10 @@ version 0.30
 POE::Component::Metabase::Relay::Server is a relay server for L<Metabase>. It provides a listener
 that accepts connections from L<Test::Reporter::Transport::Socket> based CPAN Testers and
 relays the L<Storable> serialised data to L<Metabase> using L<POE::Component::Metabase::Client::Submit>.
+
+L<POE::Component::Client::HTTP> is used to submit reports usually, but if version C<0.06> of
+L<POE::Component::Curl::Multi> is found to be installed, this will be used in preference. You can
+disable this usage using the C<no_curl> option to C<spawn>.
 
 =for Pod::Coverage START
 
@@ -398,6 +409,7 @@ and a number of optional parameters:
   'debug', enable debugging information;
   'multiple', set to true to enable the Queue to use multiple PoCo-Client-HTTPs, default 0;
   'no_relay', set to true to disable report submissions to the Metabase, default 0;
+  'no_curl',  set to true to disable automatic usage of POE::Component::Curl::Multi, default 0;
   'submissions', an int to control the number of parallel http clients ( used only if multiple == 1 ), default 10;
   'session', a POE::Session alias or session ID to send events to;
   'recv_event', an event to be triggered when reports are received by the relay;

@@ -3,7 +3,7 @@ NAME
     component
 
 VERSION
-    version 0.30
+    version 0.32
 
 SYNOPSIS
       use strict;
@@ -29,6 +29,11 @@ DESCRIPTION
     Storable serialised data to Metabase using
     POE::Component::Metabase::Client::Submit.
 
+    POE::Component::Client::HTTP is used to submit reports usually, but if
+    version 0.06 of POE::Component::Curl::Multi is found to be installed,
+    this will be used in preference. You can disable this usage using the
+    "no_curl" option to "spawn".
+
 CONSTRUCTOR
     "spawn"
         Spawns a new component session and creates a SQLite database if it
@@ -50,6 +55,7 @@ CONSTRUCTOR
           'debug', enable debugging information;
           'multiple', set to true to enable the Queue to use multiple PoCo-Client-HTTPs, default 0;
           'no_relay', set to true to disable report submissions to the Metabase, default 0;
+          'no_curl',  set to true to disable automatic usage of POE::Component::Curl::Multi, default 0;
           'submissions', an int to control the number of parallel http clients ( used only if multiple == 1 ), default 10;
           'session', a POE::Session alias or session ID to send events to;
           'recv_event', an event to be triggered when reports are received by the relay;
