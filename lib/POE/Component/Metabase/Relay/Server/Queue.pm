@@ -1,5 +1,5 @@
 package POE::Component::Metabase::Relay::Server::Queue;
-$POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.32';
+$POE::Component::Metabase::Relay::Server::Queue::VERSION = '0.34';
 # ABSTRACT: Submission queue for the metabase relay
 
 use strict;
@@ -122,7 +122,7 @@ has 'no_relay' => (
   },
 );
 
-has 'no_relay' => (
+has 'no_curl' => (
   is => 'ro',
   isa => 'Bool',
   default => 0,
@@ -191,7 +191,7 @@ sub START {
   my ($kernel,$self) = @_[KERNEL,OBJECT];
   $self->_build_table;
   $kernel->yield( 'do_vacuum', 'process' );
-  if ( can_load( modules => { 'POE::Component::Curl::Multi' => '0.06' } ) ) {
+  if ( !$self->no_curl && can_load( modules => { 'POE::Component::Curl::Multi' => '0.08' } ) ) {
     $self->_set_multiple( 0 );
     $self->_set_http_alias( join '-', __PACKAGE__, $self->get_session_id );
     POE::Component::Curl::Multi->spawn(
@@ -437,7 +437,7 @@ POE::Component::Metabase::Relay::Server::Queue - Submission queue for the metaba
 
 =head1 VERSION
 
-version 0.32
+version 0.34
 
 =head1 DESCRIPTION
 
